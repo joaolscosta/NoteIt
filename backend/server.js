@@ -1,6 +1,7 @@
 const express = require("express");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/userRoutes");
+const cors = require("cors"); // we use this to connect the frontend and backend in case there are different origins (ports)
 
 const app = express();
 
@@ -15,7 +16,9 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/routes/userRoutes", authRoutes);
 
-const PORT = process.env.PORT || 5000;
+app.use(cors());
+
+const PORT = process.env.PORT || 5173;
 app.listen(PORT, () => {
     console.log(`Running on port: ${PORT}`);
 });
