@@ -17,8 +17,13 @@ export default function Login() {
     async function handleSubmit(event) {
         event.preventDefault();
         try {
+            // const url =
+            //     form === "Login" ? "/api/auth/login" : "/api/auth/register";
+
             const url =
-                form === "Login" ? "/api/auth/login" : "/api/auth/register";
+                form === "Login"
+                    ? "/routes/userRoutes/login"
+                    : "/routes/userRoutes/register";
 
             // contact the backend
             const response = await axios.post(url, { email, password });
