@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
+from flask_cors import CORS
 
 app = Flask(__name__)
 
@@ -10,6 +11,7 @@ app.config['MYSQL_PASSWORD'] = 'your_password'
 app.config['MYSQL_DB'] = 'noteit_db'
 
 mysql = MySQL(app)
+CORS(app)
 
 # Endpoint to register a new user
 @app.route('/register', methods=['POST'])
