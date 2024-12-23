@@ -1,5 +1,90 @@
 body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
+   margin: 0;
+   font-family: "Inter", sans-serif;
+   background-color: #1f1f20;
+}
+
+.login-headbar {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 60px;
+}
+
+.headbar-title {
+   font-size: 2rem;
+   font-weight: 600;
+   color: #fff;
+}
+
+.title-complement {
+   font-size: 2rem;
+   font-weight: 600;
+   color: #7ab8ff;
+}
+
+.login-box {
+   width: 400px;
+   margin: 50px auto;
+   padding: 30px;
+   background-color: #292929;
+   border-radius: 10px;
+   color: #fff;
+   text-align: center;
+}
+
+.login-box input {
+   width: 80%;
+   padding: 12px 15px;
+   margin: 10px 0;
+   background-color: #3c3c3e;
+   border: 1px solid #616161;
+   border-radius: 7px;
+   color: #fff;
+   font-size: 0.9rem;
+   box-sizing: border-box;
+}
+
+.login-box input:focus {
+   border-color: #7ab8ff;
+   outline: none;
+}
+
+.login-box input::placeholder {
+   color: #aaa;
+}
+
+.login-box button {
+   width: 80%;
+   padding: 12px;
+   margin: 20px 0;
+   background-color: #7ab8ff;
+   border: none;
+   border-radius: 7px;
+   color: #fff;
+   font-size: 1rem;
+   font-weight: bold;
+}
+
+.login-box button:hover {
+   background-color: #5a9ae6;
+}
+
+.login-box p {
+   margin: 15px 0;
+   font-size: 0.9rem;
+}
+
+.login-box .switch {
+   background-color: #727272;
+   color: #fff;
+   border: none;
+   padding: 10px;
+   border-radius: 7px;
+   font-weight: bold;
+   cursor: pointer;
+}
+
+.login-box .switch:hover {
+   background-color: #5a5a5a;
 }
