@@ -47,6 +47,7 @@ function Register({ onSwitch }) {
          </div>
          <div className="login-box">
             <h2>Welcome!</h2>
+            <h3>Create your account.</h3>
             <form onSubmit={handleRegister}>
                <input
                   type="text"
@@ -62,7 +63,7 @@ function Register({ onSwitch }) {
                />
                <button type="submit">Register</button>
             </form>
-            <p>
+            <p className="already">
                Already have an account?{" "}
                <button className="switch" onClick={onSwitch}>
                   Login here

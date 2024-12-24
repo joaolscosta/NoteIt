@@ -45,7 +45,8 @@ function Login({ onSwitch }) {
             </a>
          </div>
          <div className="login-box">
-            <h2>Welcome Back!</h2>
+            <h2>Welcome back!</h2>
+            <h3>Login to your account.</h3>
             <form onSubmit={handleLogin}>
                <input
                   type="text"
