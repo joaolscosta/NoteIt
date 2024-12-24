@@ -1,47 +1,61 @@
 #!/bin/bash
 
-# SQL file name
-DB_FILE="db.sql"
+# Script Name: init-backend.sh
+# Description: Initializes the NoteIt project backend
 
-# MariaDB configurations
-DB_USER="root"
-DB_PASSWORD="abc123"
-DB_HOST="localhost"
-DB_NAME="noteit_db"
+# Check if Python is installed
+if ! command -v python3 &>/dev/null; then
+    echo "Python3 is not installed. Please install Python3 before proceeding."
+    exit 1
+fi
 
-# Update and install MariaDB if not installed
-sudo apt update
-sudo apt install -y mariadb-server mariadb-client
+# Check if pip is installed
+if ! command -v pip3 &>/dev/null; then
+    echo "pip3 is not installed. Please install pip3 before proceeding."
+    exit 1
+fi
 
-# Start and enable MariaDB service
-sudo systemctl start mariadb
-sudo systemctl enable mariadb
+# Install project dependencies
+echo "Installing Python dependencies..."
+pip3 install -r requirements.txt
 
-# Step 1: Check if MariaDB is running
-echo "Checking if MariaDB is running..."
+# Check if MariaDB is running
 if ! systemctl is-active --quiet mariadb; then
     echo "MariaDB is not running. Starting MariaDB..."
     sudo systemctl start mariadb
+    if ! systemctl is-active --quiet mariadb; then
+        echo "Failed to start MariaDB. Please check your MariaDB installation."
+        exit 1
+    fi
 fi
 
-# Step 2: Check if the database already exists
-echo "Checking if the database already exists..."
-DB_EXISTS=$(mysql -u"$DB_USER" -p"$DB_PASSWORD" -e "SHOW DATABASES LIKE '$DB_NAME';" | grep "$DB_NAME")
+# Ensure the MariaDB user 'joao' exists
+echo "Ensuring MariaDB user 'joao' exists..."
+mysql -u root -p <<EOF
+CREATE USER IF NOT EXISTS 'joao'@'localhost' IDENTIFIED BY 'abc123';
+GRANT ALL PRIVILEGES ON *.* TO 'joao'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EOF
 
-if [ "$DB_EXISTS" ]; then
-    echo "Database '$DB_NAME' already exists. Skipping creation."
-else
-    echo "Creating database and setting up tables..."
-    mysql -u"$DB_USER" -p"$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;" || exit 1
-    mysql -u"$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < "$DB_FILE" || exit 1
-    echo "Database setup completed successfully!"
-fi
+# Database initialization
+echo "Initializing the database..."
+mysql -u joao -pabc123 <<EOF
+CREATE DATABASE IF NOT EXISTS noteit_db;
+USE noteit_db;
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+CREATE TABLE IF NOT EXISTS notes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL
+);
+EOF
 
-# Step 3: Install Python dependencies
-echo "Installing Python dependencies..."
-pip install -r requirements.txt || exit 1
-
-# Step 4: Start the Flask API
-echo "Starting Flask API..."
+# Start the Flask server
+echo "Starting the Flask server..."
 export FLASK_APP=app.py
-flask run --host=0.0.0.0 || exit 1
+export FLASK_ENV=development
+python3 -m flask run
