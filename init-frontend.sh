@@ -27,6 +27,7 @@ cd frontend/
 # Step 4: Install npm dependencies
 echo "Installing npm dependencies..."
 npm install
+npm install react-router-dom
 
 # Step 5: Run the frontend development server
 echo "Starting the frontend development server..."

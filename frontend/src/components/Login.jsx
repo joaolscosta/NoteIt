@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:5000";
 
 function Login({ onSwitch }) {
    const [username, setUsername] = useState("");
    const [password, setPassword] = useState("");
+   const navigate = useNavigate();
 
    // Login the user in the API
    const loginUser = async (username, password) => {
@@ -28,6 +30,7 @@ function Login({ onSwitch }) {
          const data = await loginUser(username, password);
          if (data.message === "Login successful") {
             alert("Login successful");
+            navigate("/notes");
          } else {
             alert(data.message);
          }
