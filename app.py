@@ -25,6 +25,14 @@ def register():
 
     try:
         cur = mysql.connection.cursor()
+        
+        # Check if user already exists
+        cur.execute('SELECT COUNT(*) FROM users WHERE username = %s', (username,))
+        user_exists = cur.fetchone()[0] > 0
+        if user_exists:
+            return jsonify({'message': 'User already exists'}), 409
+        
+        # Register user
         cur.execute('INSERT INTO users (username, password) VALUES (%s, %s)', (username, password))
         mysql.connection.commit()
         return jsonify({'message': 'User registered successfully'}), 201
@@ -41,15 +49,27 @@ def login():
     if not username or not password:
         return jsonify({'message': 'Username and password are required'}), 400
 
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
-    user = cur.fetchone()
+    try:
+        cur = mysql.connection.cursor()
+        
+        # Check if username exists
+        cur.execute('SELECT * FROM users WHERE username = %s', (username,))
+        user_exists = cur.fetchone()
+        if not user_exists:
+            return jsonify({'message': 'Username not found. Please register first.'}), 404
+        
+        # Check if username and password match
+        cur.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
+        user = cur.fetchone()
+        
+        if user:
+            return jsonify({'message': 'Login successful'}), 200
+        else:
+            return jsonify({'message': 'Invalid username or password'}), 401
+    except Exception as e:
+        return jsonify({'message': 'Error logging in', 'error': str(e)}), 500
 
-    if user:
-        return jsonify({'message': 'Login successful'}), 200
-    else:
-        return jsonify({'message': 'Invalid username or password'}), 401
-
+    
 # Existing endpoints for notes
 @app.route('/notes', methods=['GET'])
 def get_notes():
