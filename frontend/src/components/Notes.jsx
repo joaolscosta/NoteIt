@@ -1,9 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
+import Sidebar from "./Sidebar";
+import Topbar from "./Topbar";
+import NoteForm from "./NoteForm";
+import NoteList from "./NoteList";
 
 function Notes() {
+   const [notes, setNotes] = useState([]); // Gerencia as notas no estado
+
+   const addNote = (note) => {
+      setNotes([...notes, note]);
+   };
+
    return (
-      <div>
-         <h1>Notes</h1>
+      <div className="notes-container">
+         <Sidebar />
+         <div className="content">
+            <Topbar />
+            <NoteForm onAddNote={addNote} />
+            <NoteList notes={notes} />
+         </div>
       </div>
    );
 }

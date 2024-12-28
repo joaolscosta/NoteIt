@@ -12,15 +12,13 @@ function App() {
          <Routes>
             <Route
                path="/"
-               element={
-                  isRegistering ? (
-                     <Register onSwitch={() => setIsRegistering(false)} />
-                  ) : (
-                     <Login onSwitch={() => setIsRegistering(true)} />
-                  )
-               }
+               element={<Login onSwitch={() => setIsRegistering(true)} />}
             />
-            <Route path="/notes" element={<Notes />} /> {}
+            <Route
+               path="/register"
+               element={<Register onSwitch={() => setIsRegistering(false)} />}
+            />
+            <Route path="/notes" element={<Notes />} />
          </Routes>
       </Router>
    );
