@@ -5,22 +5,22 @@ import NoteForm from "./NoteForm";
 import NoteList from "./NoteList";
 
 function Notes() {
-   const [notes, setNotes] = useState([]); // Gerencia as notas no estado
+    const [notes, setNotes] = useState([]); // Gerencia as notas no estado
 
-   const addNote = (note) => {
-      setNotes([...notes, note]);
-   };
+    const addNote = (note) => {
+        setNotes([...notes, note]);
+    };
 
-   return (
-      <div className="notes-container">
-         <Sidebar />
-         <div className="content">
-            <Topbar />
-            <NoteForm onAddNote={addNote} />
-            <NoteList notes={notes} />
-         </div>
-      </div>
-   );
+    return (
+        <div className="notes-container">
+            <Sidebar />
+            <div className="content">
+                <Topbar />
+                <NoteForm onAddNote={addNote} />
+                <NoteList notes={notes} />
+            </div>
+        </div>
+    );
 }
 
 export default Notes;
