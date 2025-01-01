@@ -4,6 +4,8 @@ body {
     background-color: #181818;
 }
 
+/* -------------------  LOGIN ------------------- */
+
 .login-headbar {
     display: flex;
     justify-content: space-between;
@@ -89,8 +91,71 @@ body {
     background-color: #5a5a5a;
 }
 
+/* -------------------  SIDEBAR ------------------- */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 350px;
+    background-color: #202020;
+    color: #fff;
+    padding-top: 60px;
+}
+
+.note-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0px;
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+}
+
+.it-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #7ab8ff;
+    display: inline-block;
+}
+
+.button-new-note {
+    background-color: #7ab8ff;
+    color: #ffffff;
+    border: none;
+    padding: 23px 70px;
+    margin: 60px auto;
+    cursor: pointer;
+    border-radius: 7px;
+    display: block;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.button-new-note:hover {
+    background-color: #5a9ae6;
+}
+
+/* -------------------  TOPBAR ------------------- */
+
 .topbar-buttons {
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+}
+
+.topbar-buttons button {
+    background-color: #181818;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
 }

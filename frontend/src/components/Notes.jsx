@@ -16,8 +16,6 @@ function Notes() {
             <Sidebar />
             <div className="content">
                 <Topbar />
-                <NoteForm onAddNote={addNote} />
-                <NoteList notes={notes} />
             </div>
         </div>
     );
