@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
 from flask_cors import CORS
+from bcrypt import hashpw, gensalt, checkpw
 
 app = Flask(__name__)
 
@@ -32,8 +33,11 @@ def register():
         if user_exists:
             return jsonify({'message': 'User already exists'}), 409
         
+        # Hash password before storing it
+        hashed_password = hashpw(password.encode('utf-8'), gensalt())
+        
         # Register user
-        cur.execute('INSERT INTO users (username, password) VALUES (%s, %s)', (username, password))
+        cur.execute('INSERT INTO users (username, password) VALUES (%s, %s)', (username, hashed_password))
         mysql.connection.commit()
         return jsonify({'message': 'User registered successfully'}), 201
     except Exception as e:
@@ -53,38 +57,51 @@ def login():
         cur = mysql.connection.cursor()
         
         # Check if username exists
-        cur.execute('SELECT * FROM users WHERE username = %s', (username,))
-        user_exists = cur.fetchone()
-        if not user_exists:
-            return jsonify({'message': 'Username not found. Please register first.'}), 404
+        cur.execute('SELECT password FROM users WHERE username = %s', (username,))
+        result = cur.fetchone()
         
-        # Check if username and password match
-        cur.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
-        user = cur.fetchone()
+        if not result:
+            return jsonify({'message': 'Invalid username or password'}), 401
         
-        if user:
+        hashed_password = result[0].encode('utf-8')
+        
+        # Verify password
+        if checkpw(password.encode('utf-8'), hashed_password):
             return jsonify({'message': 'Login successful'}), 200
         else:
             return jsonify({'message': 'Invalid username or password'}), 401
     except Exception as e:
         return jsonify({'message': 'Error logging in', 'error': str(e)}), 500
 
-    
-# Existing endpoints for notes
+# Endpoint to get all notes
 @app.route('/notes', methods=['GET'])
 def get_notes():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM notes')
-    result = cur.fetchall()
-    return jsonify(result)
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT id, title, content FROM notes')
+        result = cur.fetchall()
+        notes = [{'id': note[0], 'title': note[1], 'content': note[2]} for note in result]
+        return jsonify(notes), 200
+    except Exception as e:
+        return jsonify({'message': 'Error retrieving notes', 'error': str(e)}), 500
 
+# Endpoint to add a new note
 @app.route('/notes', methods=['POST'])
 def add_note():
     note_data = request.json
-    cur = mysql.connection.cursor()
-    cur.execute('INSERT INTO notes (title, content) VALUES (%s, %s)', (note_data['title'], note_data['content']))
-    mysql.connection.commit()
-    return jsonify({'message': 'Note added successfully'}), 201
+    title = note_data.get('title')
+    content = note_data.get('content')
+
+    if not title or not content:
+        return jsonify({'message': 'Title and content are required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('INSERT INTO notes (title, content) VALUES (%s, %s)', (title, content))
+        mysql.connection.commit()
+        return jsonify({'message': 'Note added successfully'}), 201
+    except Exception as e:
+        return jsonify({'message': 'Error adding note', 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
