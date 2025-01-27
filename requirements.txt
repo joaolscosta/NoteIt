@@ -1,5 +1,5 @@
-flask
-flask-mysqldb
-python-dotenv
-flask-cors
-bcrypt
+Flask>=3.0.0
+Flask-MySQL>=1.5.0
+Flask-CORS>=3.1.0
+bcrypt>=4.0.1
+python-dotenv>=1.0.0

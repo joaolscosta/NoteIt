@@ -1,16 +1,9 @@
-CREATE DATABASE noteit_db;
-USE noteit_db;
+CREATE DATABASE noteit_v2;
+USE noteit_v2;
 
--- Notes table
-DROP TABLE IF EXISTS notes;
-CREATE TABLE IF NOT EXISTS notes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL
-);
+DROP TABLE IF EXISTS users;
 
 -- Users table
-DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,

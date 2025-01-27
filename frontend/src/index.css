@@ -1,161 +1,161 @@
 body {
-    margin: 0;
-    font-family: "Inter", serif;
-    background-color: #181818;
+   margin: 0;
+   font-family: "Inter", serif;
+   background-color: #181818;
 }
 
 /* -------------------  LOGIN ------------------- */
 
 .login-headbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 60px;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 60px;
 }
 
 .headbar-title {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #fff;
+   font-size: 2rem;
+   font-weight: 600;
+   color: #fff;
 }
 
 .title-complement {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #7ab8ff;
+   font-size: 2rem;
+   font-weight: 600;
+   color: #7ab8ff;
 }
 
 .login-box {
-    width: 400px;
-    margin: 50px auto;
-    padding: 30px;
-    background-color: #202020;
-    border-radius: 10px;
-    color: #fff;
-    text-align: center;
+   width: 400px;
+   margin: 50px auto;
+   padding: 30px;
+   background-color: #202020;
+   border-radius: 10px;
+   color: #fff;
+   text-align: center;
 }
 
 .login-box input {
-    width: 80%;
-    padding: 12px 15px;
-    margin: 10px 0;
-    background-color: #3c3c3e;
-    border: 1px solid #616161;
-    border-radius: 7px;
-    color: #fff;
-    font-size: 0.9rem;
-    box-sizing: border-box;
+   width: 80%;
+   padding: 12px 15px;
+   margin: 10px 0;
+   background-color: #3c3c3e;
+   border: 1px solid #616161;
+   border-radius: 7px;
+   color: #fff;
+   font-size: 0.9rem;
+   box-sizing: border-box;
 }
 
 .login-box input:focus {
-    border-color: #7ab8ff;
-    outline: none;
+   border-color: #7ab8ff;
+   outline: none;
 }
 
 .login-box input::placeholder {
-    color: #aaa;
+   color: #aaa;
 }
 
 .login-box button {
-    width: 80%;
-    padding: 12px;
-    margin: 20px 0;
-    background-color: #7ab8ff;
-    border: none;
-    border-radius: 7px;
-    color: #ffffff;
-    font-size: 1rem;
-    cursor: pointer;
+   width: 80%;
+   padding: 12px;
+   margin: 20px 0;
+   background-color: #7ab8ff;
+   border: none;
+   border-radius: 7px;
+   color: #ffffff;
+   font-size: 1rem;
+   cursor: pointer;
 }
 
 .login-box button:hover {
-    background-color: #5a9ae6;
+   background-color: #5a9ae6;
 }
 
 .login-box p {
-    margin: 15px 0;
-    font-size: 0.9rem;
-    opacity: 0.7;
+   margin: 15px 0;
+   font-size: 0.9rem;
+   opacity: 0.7;
 }
 
 .login-box .switch {
-    background-color: #727272;
-    color: #ffffff;
-    border: none;
-    padding: 10px;
-    border-radius: 7px;
-    cursor: pointer;
+   background-color: #727272;
+   color: #ffffff;
+   border: none;
+   padding: 10px;
+   border-radius: 7px;
+   cursor: pointer;
 }
 
 .login-box .switch:hover {
-    background-color: #5a5a5a;
+   background-color: #5a5a5a;
 }
 
 /* -------------------  SIDEBAR ------------------- */
 
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 350px;
-    background-color: #202020;
-    color: #fff;
-    padding-top: 60px;
+   position: fixed;
+   top: 0;
+   left: 0;
+   height: 100%;
+   width: 350px;
+   background-color: #202020;
+   color: #fff;
+   padding-top: 60px;
 }
 
 .note-title {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #ffffff;
-    margin: 0px;
-    display: inline-block;
-    text-align: center;
-    width: 100%;
+   font-size: 2rem;
+   font-weight: 600;
+   color: #ffffff;
+   margin: 0px;
+   display: inline-block;
+   text-align: center;
+   width: 100%;
 }
 
 .it-title {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #7ab8ff;
-    display: inline-block;
+   font-size: 2rem;
+   font-weight: 600;
+   color: #7ab8ff;
+   display: inline-block;
 }
 
 .button-new-note {
-    background-color: #7ab8ff;
-    color: #ffffff;
-    border: none;
-    padding: 23px 70px;
-    margin: 60px auto;
-    cursor: pointer;
-    border-radius: 7px;
-    display: block;
-    text-align: center;
-    font-size: 1.1rem;
-    font-weight: 600;
+   background-color: #7ab8ff;
+   color: #ffffff;
+   border: none;
+   padding: 23px 70px;
+   margin: 60px auto;
+   cursor: pointer;
+   border-radius: 7px;
+   display: block;
+   text-align: center;
+   font-size: 1.1rem;
+   font-weight: 600;
 }
 
 .button-new-note:hover {
-    background-color: #5a9ae6;
+   background-color: #5a9ae6;
 }
 
 /* -------------------  TOPBAR ------------------- */
 
 .topbar-buttons {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 10px;
+   display: flex;
+   justify-content: flex-end;
+   align-items: center;
+   position: absolute;
+   top: 0;
+   right: 0;
+   padding: 10px;
 }
 
 .topbar-buttons button {
-    background-color: #181818;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    cursor: pointer;
+   background-color: #181818;
+   color: white;
+   border: none;
+   padding: 10px 20px;
+   margin: 5px;
+   cursor: pointer;
 }
