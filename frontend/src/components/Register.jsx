@@ -5,8 +5,9 @@ const API_URL = "http://localhost:5000";
 function Register({ onSwitch }) {
    const [username, setUsername] = useState("");
    const [password, setPassword] = useState("");
+   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-   // Register a new user in the API
+   // Register new user
    const registerUser = async (username, password) => {
       const response = await fetch(`${API_URL}/register`, {
          method: "POST",
@@ -22,13 +23,13 @@ function Register({ onSwitch }) {
       return data;
    };
 
+   // Handles form submission for registration
    const handleRegister = async (e) => {
       e.preventDefault();
       try {
          const data = await registerUser(username, password);
          if (data.message === "User registered successfully") {
-            alert("Registration successful");
-            onSwitch(); // Next user will be able to login
+            setIsDialogOpen(true);
          } else {
             alert(data.message);
          }
@@ -70,6 +71,24 @@ function Register({ onSwitch }) {
                </button>
             </p>
          </div>
+
+         {/* Success dialog */}
+         {isDialogOpen && (
+            <div className="dialog-register-overlay">
+               <div className="dialog-register-box">
+                  <h3>Registration Successful!</h3>
+                  <p>Your account has been created successfully.</p>
+                  <button
+                     onClick={() => {
+                        setIsDialogOpen(false);
+                        onSwitch(); // Switch to the login
+                     }}
+                  >
+                     Go to Login
+                  </button>
+               </div>
+            </div>
+         )}
       </div>
    );
 }

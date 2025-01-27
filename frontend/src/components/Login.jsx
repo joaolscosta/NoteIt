@@ -29,7 +29,6 @@ function Login({ onSwitch }) {
       try {
          const data = await loginUser(username, password);
          if (data.message === "Login successful") {
-            alert("Login successful");
             navigate("/main_page");
          } else {
             alert(data.message);
