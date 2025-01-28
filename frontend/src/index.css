@@ -147,7 +147,7 @@ body {
    top: 0;
    left: 0;
    height: 100%;
-   width: 350px;
+   width: 300px;
    background-color: #202020;
    color: #fff;
    padding-top: 60px;
@@ -170,22 +170,59 @@ body {
    display: inline-block;
 }
 
-.button-new-note {
+.button-library {
    background-color: #7ab8ff;
    color: #ffffff;
    border: none;
-   padding: 23px 70px;
-   margin: 60px auto;
+   padding: 23px 98px;
+   margin: 60px auto 0 auto;
    cursor: pointer;
    border-radius: 7px;
    display: block;
    text-align: center;
-   font-size: 1.1rem;
+   font-size: 1.2rem;
    font-weight: 600;
 }
 
-.button-new-note:hover {
+.button-library:hover {
    background-color: #5a9ae6;
+}
+
+.button-new-task {
+   background-color: #313131;
+   border: 0.1px solid #414141;
+   color: #ffffff;
+   padding: 15px 93px;
+   margin: 20px auto 0 auto;
+   cursor: pointer;
+   border-radius: 7px;
+   display: block;
+   text-align: center;
+   font-size: 1rem;
+   font-weight: 600;
+}
+
+.button-new-task:hover {
+   background-color: #2c2c2c;
+}
+
+.divider {
+   border: none;
+   height: 1px;
+   background-color: #414141;
+   margin: 30px auto;
+   width: 85%;
+}
+
+.tasks-title {
+   font-size: 0.9rem;
+   font-weight: 600;
+   color: #ffffff;
+   margin: 0px;
+   display: inline-block;
+   text-align: center;
+   width: 70%;
+   opacity: 0.6;
 }
 
 /* -------------------  TOPBAR ------------------- */

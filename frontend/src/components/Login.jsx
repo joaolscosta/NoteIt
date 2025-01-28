@@ -6,6 +6,8 @@ const API_URL = "http://localhost:5000";
 function Login({ onSwitch }) {
    const [username, setUsername] = useState("");
    const [password, setPassword] = useState("");
+   const [isDialogOpen, setIsDialogOpen] = useState(false);
+   const [dialogMessage, setDialogMessage] = useState("");
    const navigate = useNavigate();
 
    // Login the user in the API
@@ -31,11 +33,13 @@ function Login({ onSwitch }) {
          if (data.message === "Login successful") {
             navigate("/main_page");
          } else {
-            alert(data.message);
+            setDialogMessage(data.message || "An error occurred during login.");
+            setIsDialogOpen(true);
          }
       } catch (error) {
          console.error("Error logging in:", error);
-         alert(error.message || "An error occurred during login.");
+         setDialogMessage(error.message || "An error occurred during login.");
+         setIsDialogOpen(true);
       }
    };
 
@@ -71,6 +75,17 @@ function Login({ onSwitch }) {
                </button>
             </p>
          </div>
+
+         {/* Dialog */}
+         {isDialogOpen && (
+            <div className="dialog-register-overlay">
+               <div className="dialog-register-box">
+                  <h3>Error</h3>
+                  <p>{dialogMessage}</p>
+                  <button onClick={() => setIsDialogOpen(false)}>Close</button>
+               </div>
+            </div>
+         )}
       </div>
    );
 }

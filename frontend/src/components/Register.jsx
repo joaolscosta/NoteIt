@@ -6,6 +6,7 @@ function Register({ onSwitch }) {
    const [username, setUsername] = useState("");
    const [password, setPassword] = useState("");
    const [isDialogOpen, setIsDialogOpen] = useState(false);
+   const [dialogMessage, setDialogMessage] = useState("");
 
    // Register new user
    const registerUser = async (username, password) => {
@@ -28,14 +29,28 @@ function Register({ onSwitch }) {
       e.preventDefault();
       try {
          const data = await registerUser(username, password);
+
          if (data.message === "User registered successfully") {
-            setIsDialogOpen(true);
+            setDialogMessage(
+               "Registration Successful! Your account has been created."
+            );
+         } else if (data.message === "Username already exists") {
+            setDialogMessage(
+               "Username already exists. Please choose a different username."
+            );
          } else {
-            alert(data.message);
+            setDialogMessage(
+               data.message || "Something went wrong. Please try again."
+            );
          }
+
+         setIsDialogOpen(true); // Open the dialog with the appropriate message
       } catch (error) {
          console.error("Error registering:", error);
-         alert(error.message || "An error occurred during registration.");
+         setDialogMessage(
+            error.message || "An error occurred during registration."
+         );
+         setIsDialogOpen(true);
       }
    };
 
@@ -72,19 +87,27 @@ function Register({ onSwitch }) {
             </p>
          </div>
 
-         {/* Success dialog */}
+         {/* Dialog */}
          {isDialogOpen && (
             <div className="dialog-register-overlay">
                <div className="dialog-register-box">
-                  <h3>Registration Successful!</h3>
-                  <p>Your account has been created successfully.</p>
+                  <h3>
+                     {dialogMessage.includes("Successful")
+                        ? "Success!"
+                        : "Error"}
+                  </h3>
+                  <p>{dialogMessage}</p>
                   <button
                      onClick={() => {
                         setIsDialogOpen(false);
-                        onSwitch(); // Switch to the login
+                        if (dialogMessage.includes("Successful")) {
+                           onSwitch(); // Switch to login if registration was successful
+                        }
                      }}
                   >
-                     Go to Login
+                     {dialogMessage.includes("Successful")
+                        ? "Go to Login"
+                        : "Try Again"}
                   </button>
                </div>
             </div>
