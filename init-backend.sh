@@ -78,11 +78,22 @@ EOF
 # Initialize the database schema
 echo "Initializing the database schema..."
 mysql -u "${DB_USER}" -p"${DB_PASSWORD}" ${DB_NAME} <<EOF
+-- Create users table
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL
+);
+
+-- Create tasks table
+DROP TABLE IF EXISTS tasks;
+CREATE TABLE IF NOT EXISTS tasks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    task TEXT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed BOOLEAN DEFAULT FALSE
 );
 EOF
 

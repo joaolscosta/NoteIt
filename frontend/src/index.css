@@ -147,11 +147,11 @@ body {
    top: 0;
    left: 0;
    height: 100%;
-   width: 300px; /* Largura da sidebar */
+   width: 300px;
    background-color: #202020;
    color: #fff;
    padding-top: 60px;
-   z-index: 1; /* Garante que a sidebar esteja sobre o conteúdo */
+   z-index: 1;
 }
 
 .note-title {
@@ -224,6 +224,28 @@ body {
    text-align: center;
    width: 70%;
    opacity: 0.6;
+}
+
+.dialog-newtask-overlay {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background: rgba(0, 0, 0, 0.6);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.dialog-newtask-box {
+   background: #202020;
+   padding: 30px;
+   border-radius: 10px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+   text-align: center;
+   max-width: 350px;
+   width: 90%;
 }
 
 /* -------------------  TOPBAR ------------------- */

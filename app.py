@@ -14,7 +14,9 @@ app.config['MYSQL_PASSWORD'] = os.getenv('DB_PASSWORD')
 app.config['MYSQL_DB'] = os.getenv('DB_NAME')
 
 mysql = MySQL(app)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+# --------------------------------------- User Routes ---------------------------------------
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -74,6 +76,46 @@ def login():
     except Exception as e:
         cur.close()
         return jsonify({'message': 'Error logging in', 'error': str(e)}), 500
+    
+# --------------------------------------- Task routes ---------------------------------------
+
+@app.route('/addtask', methods=['POST'])
+def add_task():
+    task_data = request.json
+    username = task_data.get('username')
+    task_text = task_data.get('task_text')
+    
+    if not username or not task_text:
+        return jsonify({'message': 'Task and user_id are required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        
+        cur.execute('INSERT INTO tasks (task, username) VALUES (%s, %s)', (task_text, username))
+        mysql.connection.commit()
+        
+        cur.close()
+
+        return jsonify({'message': 'Task added successfully'}), 201
+    except Exception as e:
+        cur.close()
+        return jsonify({'message': 'Error adding task', 'error': str(e)}), 500
+
+@app.route('/tasks', methods=['GET'])
+def get_tasks():
+    username = request.args.get('username')
+    if not username:
+        return jsonify({'message': 'Username is required'}), 400
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT id, task FROM tasks WHERE username = %s', (username,))
+        tasks = cur.fetchall()
+        cur.close()
+        tasks_list = [{'id': task[0], 'task': task[1]} for task in tasks]
+        return jsonify({'tasks': tasks_list}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error fetching tasks', 'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
