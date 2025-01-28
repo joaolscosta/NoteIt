@@ -31,6 +31,7 @@ function Login({ onSwitch }) {
       try {
          const data = await loginUser(username, password);
          if (data.message === "Login successful") {
+            localStorage.setItem("username", username);
             navigate("/main_page");
          } else {
             setDialogMessage(data.message || "An error occurred during login.");

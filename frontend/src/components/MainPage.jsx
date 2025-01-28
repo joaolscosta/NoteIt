@@ -6,9 +6,8 @@ const MainPage = () => {
    return (
       <div className="main-page">
          <Topbar />
-         <div className="content">
-            <Sidebar />
-         </div>
+         <Sidebar />
+         <p>ola</p>
       </div>
    );
 };
