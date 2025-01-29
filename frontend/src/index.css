@@ -215,6 +215,8 @@ body {
    width: 85%;
 }
 
+/* Tasks */
+
 .tasks-title {
    font-size: 0.9rem;
    font-weight: 600;
@@ -226,7 +228,7 @@ body {
    opacity: 0.6;
 }
 
-.dialog-newtask-overlay {
+.dialog-register-overlay {
    position: fixed;
    top: 0;
    left: 0;
@@ -239,13 +241,68 @@ body {
 }
 
 .dialog-newtask-box {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
    background: #202020;
-   padding: 30px;
+   padding: 20px;
    border-radius: 10px;
-   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
    text-align: center;
-   max-width: 350px;
-   width: 90%;
+   width: 20%;
+}
+
+.task-input-container {
+   display: flex;
+   justify-content: flex-end;
+   width: 100%;
+   margin-top: 10px;
+}
+
+.task-input {
+   width: 100%;
+   height: 80px;
+   padding: 15px;
+   background-color: #3c3c3e;
+   border: 1px solid #616161;
+   border-radius: 7px;
+   color: #fff;
+   font-size: 0.9rem;
+   box-sizing: border-box;
+   text-align: left;
+   vertical-align: top;
+   resize: none;
+   outline: none;
+}
+
+.button-task-input-add {
+   padding: 9px 20px;
+   background-color: #7ab8ff;
+   border: none;
+   border-radius: 7px;
+   color: #ffffff;
+   font-size: 0.9rem;
+   cursor: pointer;
+   margin-left: 10px;
+}
+
+.button-task-input-cancel {
+   padding: 9px 10px;
+   background-color: #616161;
+   border: none;
+   border-radius: 7px;
+   color: #ffffff;
+   font-size: 0.9rem;
+   cursor: pointer;
+   margin-left: 10px;
+}
+
+.button-task-input-add:hover {
+   background-color: #5a9ae6;
+}
+
+.button-task-input-cancel:hover {
+   background-color: #4e4e4e;
 }
 
 /* -------------------  TOPBAR ------------------- */
@@ -290,7 +347,7 @@ body {
    cursor: pointer;
    font-size: 0.9rem;
    font-weight: bold;
-   padding: 10px 30px;
+   padding: 10px 15px;
    border-radius: 5px;
    opacity: 90%;
 }

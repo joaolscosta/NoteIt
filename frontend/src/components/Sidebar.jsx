@@ -6,13 +6,31 @@ function Sidebar() {
    const [taskInput, setTaskInput] = useState("");
    const [tasks, setTasks] = useState([]);
 
-   const openDialog = () => {
-      setIsDialogOpen(true);
-   };
-
+   const openDialog = () => setIsDialogOpen(true);
    const closeDialog = () => {
       setIsDialogOpen(false);
+      setTaskInput("");
    };
+
+   const fetchTasks = async () => {
+      const username = localStorage.getItem("username");
+      if (!username) return;
+
+      try {
+         const response = await axios.get(
+            `http://localhost:5000/tasks?username=${username}`
+         );
+         if (response.status === 200) {
+            setTasks(response.data.tasks);
+         }
+      } catch (error) {
+         console.error("Error fetching tasks:", error);
+      }
+   };
+
+   useEffect(() => {
+      fetchTasks();
+   }, []);
 
    const addTask = async (event) => {
       event.preventDefault();
@@ -25,42 +43,22 @@ function Sidebar() {
                task_text: taskInput,
             });
 
-            if (response.status === 200) {
-               const newTask = {
-                  id: response.data.id, // Supondo que o servidor retorne o id da nova tarefa
-                  task: taskInput,
-               };
+            if (response.status === 201 && response.data.id) {
+               setTasks((prevTasks) => [
+                  ...prevTasks,
+                  { id: response.data.id, task: taskInput },
+               ]);
 
-               // Atualiza diretamente o estado de tarefas
-               setTasks((prevTasks) => [...prevTasks, newTask]);
-               setTaskInput(""); // Limpa o campo de input
-               closeDialog(); // Fecha o diálogo
+               setTaskInput("");
+               fetchTasks();
+            } else {
+               console.error("Invalid response from server:", response.data);
             }
          } catch (error) {
-            console.error("There was an error adding the task:", error);
+            console.error("Error adding task:", error);
          }
       }
    };
-
-   const fetchTasks = async () => {
-      const username = localStorage.getItem("username");
-      if (username) {
-         try {
-            const response = await axios.get(
-               `http://localhost:5000/tasks?username=${username}`
-            );
-            if (response.status === 200) {
-               setTasks(response.data.tasks);
-            }
-         } catch (error) {
-            console.error("Error fetching tasks:", error);
-         }
-      }
-   };
-
-   useEffect(() => {
-      fetchTasks();
-   }, []);
 
    return (
       <div className="sidebar">
@@ -82,20 +80,36 @@ function Sidebar() {
             )}
          </ul>
 
-         {/* Dialog */}
          {isDialogOpen && (
-            <div className="dialog-newtask-overlay">
+            <div
+               className="dialog-register-overlay"
+               onClick={(e) => {
+                  if (e.target === e.currentTarget) {
+                     closeDialog();
+                  }
+               }}
+            >
                <div className="dialog-newtask-box">
                   <form onSubmit={addTask}>
-                     <input
-                        type="text"
+                     <textarea
+                        className="task-input"
                         value={taskInput}
                         onChange={(e) => setTaskInput(e.target.value)}
                         placeholder="Enter task..."
-                     />
-                     <button type="submit">Create</button>
+                     ></textarea>
+                     <div className="task-input-container">
+                        <button
+                           type="button"
+                           className="button-task-input-cancel"
+                           onClick={closeDialog}
+                        >
+                           Cancel
+                        </button>
+                        <button type="submit" className="button-task-input-add">
+                           Add
+                        </button>
+                     </div>
                   </form>
-                  <button onClick={closeDialog}>Cancel</button>
                </div>
             </div>
          )}

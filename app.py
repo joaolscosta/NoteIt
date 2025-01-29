@@ -104,16 +104,20 @@ def add_task():
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
     username = request.args.get('username')
+    
     if not username:
         return jsonify({'message': 'Username is required'}), 400
+
     try:
         cur = mysql.connection.cursor()
+        
         cur.execute('SELECT id, task FROM tasks WHERE username = %s', (username,))
-        tasks = cur.fetchall()
+        tasks = [{'id': row[0], 'task': row[1]} for row in cur.fetchall()]
+        
         cur.close()
-        tasks_list = [{'id': task[0], 'task': task[1]} for task in tasks]
-        return jsonify({'tasks': tasks_list}), 200
+        return jsonify({'tasks': tasks}), 200
     except Exception as e:
+        cur.close()
         return jsonify({'message': 'Error fetching tasks', 'error': str(e)}), 500
 
 
