@@ -43,14 +43,14 @@ function Sidebar() {
                task_text: taskInput,
             });
 
-            if (response.status === 201 && response.data.id) {
+            if (response.status === 201) {
                setTasks((prevTasks) => [
                   ...prevTasks,
-                  { id: response.data.id, task: taskInput },
+                  { id: response.data.id, task: taskInput, completed: false },
                ]);
 
                setTaskInput("");
-               fetchTasks();
+               closeDialog();
             } else {
                console.error("Invalid response from server:", response.data);
             }
@@ -72,9 +72,13 @@ function Sidebar() {
          <hr className="divider" />
          <p className="tasks-title">Tasks left for today:</p>
 
-         <ul>
+         <ul className="tasks-container">
             {tasks.length > 0 ? (
-               tasks.map((task) => <li key={task.id}>{task.task}</li>)
+               tasks.map((task) => (
+                  <li key={task.id}>
+                     <span>{task.task}</span>
+                  </li>
+               ))
             ) : (
                <p>No tasks for today.</p>
             )}

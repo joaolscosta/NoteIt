@@ -146,7 +146,7 @@ body {
    position: fixed;
    top: 0;
    left: 0;
-   height: 100%;
+   height: 100vh;
    width: 300px;
    background-color: #202020;
    color: #fff;
@@ -228,6 +228,12 @@ body {
    opacity: 0.6;
 }
 
+.tasks-container {
+   max-height: calc(100vh - 200px);
+   overflow-y: auto;
+   padding-right: 10px;
+}
+
 .dialog-register-overlay {
    position: fixed;
    top: 0;
@@ -260,6 +266,7 @@ body {
 }
 
 .task-input {
+   font-family: "Inter", serif;
    width: 100%;
    height: 80px;
    padding: 15px;
@@ -303,6 +310,20 @@ body {
 
 .button-task-input-cancel:hover {
    background-color: #4e4e4e;
+}
+
+.task-item {
+   display: flex;
+   align-items: center;
+   background-color: #292929;
+   border: 0.1px solid #414141;
+   color: #ffffff;
+   margin: 10px 0;
+   padding: 10px;
+   cursor: pointer;
+   border-radius: 7px;
+   font-size: 0.9rem;
+   width: 80%;
 }
 
 /* -------------------  TOPBAR ------------------- */

@@ -120,6 +120,61 @@ def get_tasks():
         cur.close()
         return jsonify({'message': 'Error fetching tasks', 'error': str(e)}), 500
 
+@app.route('/complete_task', methods=['POST'])
+def complete_task():
+    task_data = request.json
+    username = task_data.get('username')
+    task_id = task_data.get('task_id')
+    
+    if not username or not task_id:
+        return jsonify({'message': 'Username and task_id are required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        
+        cur.execute('SELECT id FROM tasks WHERE id = %s AND username = %s', (task_id, username))
+        task = cur.fetchone()
+        
+        if not task:
+            return jsonify({'message': 'Task not found or does not belong to user'}), 404
+        
+        cur.execute('UPDATE tasks SET completed = TRUE WHERE id = %s', (task_id,))
+        mysql.connection.commit()
+        
+        cur.close()
+
+        return jsonify({'message': 'Task marked as completed'}), 200
+    except Exception as e:
+        cur.close()
+        return jsonify({'message': 'Error completing task', 'error': str(e)}), 500
+
+@app.route('/delete_task', methods=['DELETE'])
+def delete_task():
+    task_data = request.json
+    username = task_data.get('username')
+    task_id = task_data.get('task_id')
+    
+    if not username or not task_id:
+        return jsonify({'message': 'Username and task_id are required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        
+        cur.execute('SELECT id FROM tasks WHERE id = %s AND username = %s', (task_id, username))
+        task = cur.fetchone()
+        
+        if not task:
+            return jsonify({'message': 'Task not found or does not belong to user'}), 404
+        
+        cur.execute('DELETE FROM tasks WHERE id = %s', (task_id,))
+        mysql.connection.commit()
+        
+        cur.close()
+
+        return jsonify({'message': 'Task deleted successfully'}), 200
+    except Exception as e:
+        cur.close()
+        return jsonify({'message': 'Error deleting task', 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
