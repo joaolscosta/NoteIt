@@ -60,12 +60,55 @@ function Sidebar() {
       }
    };
 
-   const toggleTaskCompletion = (taskId) => {
-      setTasks((prevTasks) =>
-         prevTasks.map((task) =>
-            task.id === taskId ? { ...task, completed: !task.completed } : task
-         )
-      );
+   const toggleTaskCompletion = async (taskId) => {
+      const username = localStorage.getItem("username");
+      if (!username) return;
+
+      try {
+         const response = await axios.post(
+            "http://localhost:5000/complete_task",
+            {
+               username: username,
+               task_id: taskId,
+            }
+         );
+
+         if (response.status === 200) {
+            setTasks((prevTasks) =>
+               prevTasks.map((task) =>
+                  task.id === taskId ? { ...task, completed: true } : task
+               )
+            );
+         } else {
+            console.error("Failed to mark task as completed:", response.data);
+         }
+      } catch (error) {
+         console.error("Error marking task as completed:", error);
+      }
+   };
+
+   const deleteTask = async (taskId) => {
+      const username = localStorage.getItem("username");
+      if (!username) return;
+
+      try {
+         const response = await axios.delete(
+            "http://localhost:5000/delete_task",
+            {
+               data: { username: username, task_id: taskId },
+            }
+         );
+
+         if (response.status === 200) {
+            setTasks((prevTasks) =>
+               prevTasks.filter((task) => task.id !== taskId)
+            );
+         } else {
+            console.error("Failed to delete task:", response.data);
+         }
+      } catch (error) {
+         console.error("Error deleting task:", error);
+      }
    };
 
    return (
@@ -97,7 +140,10 @@ function Sidebar() {
                         ></i>
                      </button>
                      <span>{task.task}</span>
-                     <button className="delete-task-icon">
+                     <button
+                        className="delete-task-icon"
+                        onClick={() => deleteTask(task.id)}
+                     >
                         <i className="fas fa-trash-alt fa-lg"></i>
                      </button>
                   </div>
