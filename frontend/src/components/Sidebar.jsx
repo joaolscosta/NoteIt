@@ -60,6 +60,14 @@ function Sidebar() {
       }
    };
 
+   const toggleTaskCompletion = (taskId) => {
+      setTasks((prevTasks) =>
+         prevTasks.map((task) =>
+            task.id === taskId ? { ...task, completed: !task.completed } : task
+         )
+      );
+   };
+
    return (
       <div className="sidebar">
          <div className="note-title">
@@ -72,17 +80,32 @@ function Sidebar() {
          <hr className="divider" />
          <p className="tasks-title">Tasks left for today:</p>
 
-         <ul className="tasks-container">
+         <div className="tasks-container">
             {tasks.length > 0 ? (
                tasks.map((task) => (
-                  <li key={task.id}>
+                  <div key={task.id} className="task-item">
+                     <button
+                        className="task-icon-button"
+                        onClick={() => toggleTaskCompletion(task.id)}
+                     >
+                        <i
+                           className={`task-icon fa-2x ${
+                              task.completed
+                                 ? "fas fa-check-circle"
+                                 : "far fa-circle"
+                           }`}
+                        ></i>
+                     </button>
                      <span>{task.task}</span>
-                  </li>
+                     <button className="delete-task-icon">
+                        <i className="fas fa-trash-alt fa-lg"></i>
+                     </button>
+                  </div>
                ))
             ) : (
-               <p>No tasks for today.</p>
+               <p className="no-tasks">No tasks available</p>
             )}
-         </ul>
+         </div>
 
          {isDialogOpen && (
             <div
