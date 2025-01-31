@@ -18,6 +18,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 # --------------------------------------- User Routes ---------------------------------------
 
+# Register
 @app.route('/register', methods=['POST'])
 def register():
     user_data = request.json
@@ -47,6 +48,7 @@ def register():
         cur.close()
         return jsonify({'message': 'Error registering user', 'error': str(e)}), 500
 
+# Login
 @app.route('/login', methods=['POST'])
 def login():
     user_data = request.json
@@ -79,6 +81,7 @@ def login():
     
 # --------------------------------------- Task routes ---------------------------------------
 
+# Add a task
 @app.route('/addtask', methods=['POST'])
 def add_task():
     task_data = request.json
@@ -101,6 +104,7 @@ def add_task():
         cur.close()
         return jsonify({'message': 'Error adding task', 'error': str(e)}), 500
 
+# Get all tasks
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
     username = request.args.get('username')
@@ -120,7 +124,7 @@ def get_tasks():
         cur.close()
         return jsonify({'message': 'Error fetching tasks', 'error': str(e)}), 500
 
-
+# Mark task as complete
 @app.route('/complete_task', methods=['POST'])
 def toggle_task_completion():
     task_data = request.json
@@ -149,6 +153,7 @@ def toggle_task_completion():
         cur.close()
         return jsonify({'message': 'Error updating task', 'error': str(e)}), 500
 
+# Delete a task
 @app.route('/delete_task', methods=['POST'])
 def delete_task():
     task_data = request.json
@@ -175,6 +180,27 @@ def delete_task():
     except Exception as e:
         cur.close()
         return jsonify({'message': 'Error deleting task', 'error': str(e)}), 500
-    
+
+# Delete all tasks for that username
+@app.route('/delete_all_tasks', methods=['POST'])
+def delete_all_tasks():
+    username = request.json.get('username')
+
+    if not username:
+        return jsonify({'message': 'Username is required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        
+        cur.execute('DELETE FROM tasks WHERE username = %s', (username,))
+        mysql.connection.commit()
+        
+        cur.close()
+        
+        return jsonify({'message': 'All tasks deleted successfully'}), 200
+    except Exception as e:
+        cur.close()
+        return jsonify({'message': 'Error deleting tasks', 'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)

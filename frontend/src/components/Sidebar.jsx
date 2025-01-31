@@ -91,6 +91,23 @@ function Sidebar() {
       }
    };
 
+   const deleteAllTasks = async () => {
+      try {
+         const response = await axios.post(
+            "http://localhost:5000/delete_all_tasks",
+            {
+               username: localStorage.getItem("username"),
+            }
+         );
+
+         if (response.status === 200) {
+            setTasks([]);
+         }
+      } catch (error) {
+         console.error("Error deleting all tasks:", error);
+      }
+   };
+
    useEffect(() => {
       fetchTasks();
    }, []);
@@ -106,7 +123,6 @@ function Sidebar() {
          </button>
          <hr className="divider" />
          <p className="tasks-title">Tasks left for today:</p>
-
          <div className="tasks-container">
             {tasks.length > 0 ? (
                tasks.map((task) => (
@@ -139,6 +155,16 @@ function Sidebar() {
             ) : (
                <p className="no-tasks">No tasks available</p>
             )}
+         </div>
+         <div className="bottom-sidebar">
+            <button className="clear-tasks-button" onClick={deleteAllTasks}>
+               Clear tasks
+            </button>
+            <div className="help-container">
+               <button className="help-button">
+                  <i className="fas fa-question-circle"></i>Help
+               </button>
+            </div>
          </div>
 
          {isDialogOpen && (
