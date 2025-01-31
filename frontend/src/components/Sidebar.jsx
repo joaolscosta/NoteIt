@@ -28,10 +28,6 @@ function Sidebar() {
       }
    };
 
-   useEffect(() => {
-      fetchTasks();
-   }, []);
-
    const addTask = async (event) => {
       event.preventDefault();
 
@@ -44,13 +40,9 @@ function Sidebar() {
             });
 
             if (response.status === 201) {
-               setTasks((prevTasks) => [
-                  ...prevTasks,
-                  { id: response.data.id, task: taskInput, completed: false },
-               ]);
-
                setTaskInput("");
                closeDialog();
+               fetchTasks();
             } else {
                console.error("Invalid response from server:", response.data);
             }
@@ -60,42 +52,32 @@ function Sidebar() {
       }
    };
 
-   const toggleTaskCompletion = async (taskId) => {
-      const username = localStorage.getItem("username");
-      if (!username) return;
-
+   const toggleTaskCompletion = async (taskId, currentStatus) => {
       try {
          const response = await axios.post(
             "http://localhost:5000/complete_task",
-            {
-               username: username,
-               task_id: taskId,
-            }
+            { task_id: taskId }
          );
-
          if (response.status === 200) {
             setTasks((prevTasks) =>
                prevTasks.map((task) =>
-                  task.id === taskId ? { ...task, completed: true } : task
+                  task.id === taskId
+                     ? { ...task, completed: !currentStatus }
+                     : task
                )
             );
-         } else {
-            console.error("Failed to mark task as completed:", response.data);
          }
       } catch (error) {
-         console.error("Error marking task as completed:", error);
+         console.error("Error toggling task completion:", error);
       }
    };
 
    const deleteTask = async (taskId) => {
-      const username = localStorage.getItem("username");
-      if (!username) return;
-
       try {
-         const response = await axios.delete(
+         const response = await axios.post(
             "http://localhost:5000/delete_task",
             {
-               data: { username: username, task_id: taskId },
+               task_id: taskId,
             }
          );
 
@@ -103,13 +85,15 @@ function Sidebar() {
             setTasks((prevTasks) =>
                prevTasks.filter((task) => task.id !== taskId)
             );
-         } else {
-            console.error("Failed to delete task:", response.data);
          }
       } catch (error) {
          console.error("Error deleting task:", error);
       }
    };
+
+   useEffect(() => {
+      fetchTasks();
+   }, []);
 
    return (
       <div className="sidebar">
@@ -129,17 +113,21 @@ function Sidebar() {
                   <div key={task.id} className="task-item">
                      <button
                         className="task-icon-button"
-                        onClick={() => toggleTaskCompletion(task.id)}
+                        onClick={() =>
+                           toggleTaskCompletion(task.id, task.completed)
+                        }
                      >
                         <i
-                           className={`task-icon fa-2x ${
+                           className={`fa-2x ${
                               task.completed
                                  ? "fas fa-check-circle"
                                  : "far fa-circle"
                            }`}
                         ></i>
                      </button>
-                     <span>{task.task}</span>
+                     <span className={task.completed ? "task-completed" : ""}>
+                        {task.task}
+                     </span>
                      <button
                         className="delete-task-icon"
                         onClick={() => deleteTask(task.id)}

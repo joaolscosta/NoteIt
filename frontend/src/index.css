@@ -221,7 +221,7 @@ body {
    font-size: 0.9rem;
    font-weight: 600;
    color: #ffffff;
-   margin: 0px;
+   margin: 10px 0;
    display: inline-block;
    text-align: center;
    width: 70%;
@@ -231,7 +231,11 @@ body {
 .tasks-container {
    max-height: calc(100vh - 200px);
    overflow-y: auto;
+   overflow-x: hidden;
    padding-right: 10px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
 }
 
 .dialog-register-overlay {
@@ -325,10 +329,11 @@ body {
 }
 
 .task-item {
+   opacity: 0.8;
    background-color: #292929;
    border: 0.1px solid #414141;
    color: #ffffff;
-   margin: 10px 30px;
+   margin: 7px;
    padding: 8px;
    border-radius: 7px;
    font-size: 0.9rem;
@@ -339,14 +344,14 @@ body {
    white-space: pre-wrap;
    word-wrap: break-word;
    overflow-wrap: break-word;
-   max-width: 75%;
+   max-width: 70%;
    word-break: break-word;
    line-height: 1;
    position: relative;
 }
 
 .task-icon {
-   font-size: 24px;
+   font-size: 14px;
    color: #fff;
 }
 
@@ -368,11 +373,17 @@ body {
 }
 
 .task-icon-button {
+   color: #fff;
+   font-size: 10px;
    background: none;
    border: none;
    cursor: pointer;
    display: flex;
    align-items: center;
+}
+
+.task-completed {
+   opacity: 0.3;
 }
 
 /* -------------------  TOPBAR ------------------- */

@@ -110,9 +110,9 @@ def get_tasks():
 
     try:
         cur = mysql.connection.cursor()
-        
-        cur.execute('SELECT id, task FROM tasks WHERE username = %s', (username,))
-        tasks = [{'id': row[0], 'task': row[1]} for row in cur.fetchall()]
+
+        cur.execute('SELECT id, task, completed FROM tasks WHERE username = %s', (username,))
+        tasks = [{'id': row[0], 'task': row[1], 'completed': row[2]} for row in cur.fetchall()]
         
         cur.close()
         return jsonify({'tasks': tasks}), 200
@@ -120,61 +120,61 @@ def get_tasks():
         cur.close()
         return jsonify({'message': 'Error fetching tasks', 'error': str(e)}), 500
 
+
 @app.route('/complete_task', methods=['POST'])
-def complete_task():
+def toggle_task_completion():
     task_data = request.json
-    username = task_data.get('username')
     task_id = task_data.get('task_id')
-    
-    if not username or not task_id:
-        return jsonify({'message': 'Username and task_id are required'}), 400
+
+    if not task_id:
+        return jsonify({'message': 'Task ID is required'}), 400
 
     try:
         cur = mysql.connection.cursor()
         
-        cur.execute('SELECT id FROM tasks WHERE id = %s AND username = %s', (task_id, username))
+        cur.execute('SELECT completed FROM tasks WHERE id = %s', (task_id,))
         task = cur.fetchone()
-        
         if not task:
-            return jsonify({'message': 'Task not found or does not belong to user'}), 404
+            return jsonify({'message': 'Task not found'}), 404
         
-        cur.execute('UPDATE tasks SET completed = TRUE WHERE id = %s', (task_id,))
+        new_status = not task[0]
+        
+        cur.execute('UPDATE tasks SET completed = %s WHERE id = %s', (new_status, task_id))
         mysql.connection.commit()
         
         cur.close()
-
-        return jsonify({'message': 'Task marked as completed'}), 200
+        
+        return jsonify({'message': 'Task updated successfully', 'completed': new_status}), 200
     except Exception as e:
         cur.close()
-        return jsonify({'message': 'Error completing task', 'error': str(e)}), 500
+        return jsonify({'message': 'Error updating task', 'error': str(e)}), 500
 
-@app.route('/delete_task', methods=['DELETE'])
+@app.route('/delete_task', methods=['POST'])
 def delete_task():
     task_data = request.json
-    username = task_data.get('username')
     task_id = task_data.get('task_id')
-    
-    if not username or not task_id:
-        return jsonify({'message': 'Username and task_id are required'}), 400
+
+    if not task_id:
+        return jsonify({'message': 'Task ID is required'}), 400
 
     try:
         cur = mysql.connection.cursor()
         
-        cur.execute('SELECT id FROM tasks WHERE id = %s AND username = %s', (task_id, username))
+        cur.execute('SELECT * FROM tasks WHERE id = %s', (task_id,))
         task = cur.fetchone()
         
         if not task:
-            return jsonify({'message': 'Task not found or does not belong to user'}), 404
+            return jsonify({'message': 'Task not found'}), 404
         
         cur.execute('DELETE FROM tasks WHERE id = %s', (task_id,))
         mysql.connection.commit()
         
         cur.close()
-
+        
         return jsonify({'message': 'Task deleted successfully'}), 200
     except Exception as e:
         cur.close()
         return jsonify({'message': 'Error deleting task', 'error': str(e)}), 500
-
+    
 if __name__ == '__main__':
     app.run(debug=True)
