@@ -505,6 +505,16 @@ body {
    padding: 20px 50px;
 }
 
+.library-file-path {
+   font-size: 1rem;
+   font-weight: 600;
+   color: #838686;
+   margin: 0px;
+   display: inline-block;
+   width: 100%;
+   padding: 10px 50px;
+}
+
 /* -------------------  MAIN PAGE ------------------- */
 .main-page {
    display: flex;

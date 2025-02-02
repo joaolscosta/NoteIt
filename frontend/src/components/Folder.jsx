@@ -1,11 +1,7 @@
 import React from "react";
 
-function Folder({ name, onClick }) {
-   return (
-      <div className="folder" onClick={onClick}>
-         📁 {name}
-      </div>
-   );
+function Folder() {
+   return <div className="folder"></div>;
 }
 
 export default Folder;
