@@ -497,7 +497,7 @@ body {
 
 .library-title {
    font-size: 2rem;
-   font-weight: 600;
+   font-weight: bold;
    color: #ffffff;
    margin: 0px;
    display: inline-block;

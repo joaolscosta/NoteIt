@@ -202,5 +202,67 @@ def delete_all_tasks():
         cur.close()
         return jsonify({'message': 'Error deleting tasks', 'error': str(e)}), 500
 
+# --------------------------------------- Folders ---------------------------------------
+
+@app.route('/create_folder', methods=['POST'])
+def create_folder():
+    data = request.json
+    username = data.get('username')
+    folder_name = data.get('folder_name')
+    parent_id = data.get('parent_id', None) # None if root
+
+    if not username or not folder_name:
+        return jsonify({'message': 'Username and folder name are required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            'INSERT INTO folders (name, username, parent_id) VALUES (%s, %s, %s)',
+            (folder_name, username, parent_id)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'message': 'Folder created successfully'}), 201
+    except Exception as e:
+        return jsonify({'message': 'Error creating folder', 'error': str(e)}), 500
+    
+@app.route('/get_folders', methods=['GET'])
+def get_folders():
+    username = request.args.get('username')
+    parent_id = request.args.get('parent_id', None)  # If none, return root folders
+
+    if not username:
+        return jsonify({'message': 'Username is required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            'SELECT id, name FROM folders WHERE username = %s AND parent_id <=> %s',
+            (username, parent_id)
+        )
+        folders = [{'id': row[0], 'name': row[1]} for row in cur.fetchall()]
+        cur.close()
+        return jsonify({'folders': folders}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error fetching folders', 'error': str(e)}), 500
+
+@app.route('/delete_folder', methods=['POST'])
+def delete_folder():
+    data = request.json
+    folder_id = data.get('folder_id')
+
+    if not folder_id:
+        return jsonify({'message': 'Folder ID is required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('DELETE FROM folders WHERE id = %s', (folder_id,))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'message': 'Folder deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error deleting folder', 'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)
