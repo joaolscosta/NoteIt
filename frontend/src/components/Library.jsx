@@ -1,64 +1,68 @@
 import React, { useState, useEffect } from "react";
-import Folder from "./Folder";
+import axios from "axios";
 
 function Library() {
    const [folders, setFolders] = useState([]);
-   const [currentPath, setCurrentPath] = useState([]);
-   const [parentId, setParentId] = useState(null);
-   const username = localStorage.getItem("username");
 
-   const fetchFolders = async (parentId) => {
+   useEffect(() => {
+      fetchFolders();
+   }, []);
+
+   const fetchFolders = async () => {
       try {
-         const response = await fetch(
-            `http://localhost:5000/get_folders?username=${username}&parent_id=${parentId || ""}`
-         );
-         const data = await response.json();
-         if (response.ok) {
-            setFolders(data.folders);
-         } else {
-            console.error("Error fetching folders:", data.message);
-         }
+         const username = localStorage.getItem("username");
+         const response = await axios.get("http://localhost:5000/get_folders", {
+            params: { username },
+         });
+         setFolders(response.data.folders);
       } catch (error) {
-         console.error("Network error:", error);
+         console.error("Error fetching folders:", error);
       }
    };
 
-   useEffect(() => {
-      fetchFolders(parentId);
-   }, [parentId]);
-
    const addFolder = async () => {
-      const folderName = prompt("Enter folder name:");
+      const folderName = prompt("Enter folder name:"); // TODO: replace with a dialog
       if (!folderName) return;
 
+      if (folderName.length > 30) {
+         alert("Folder name should be less than 30 characters"); // TODO: replace with a dialog
+         return;
+      }
       try {
-         const response = await fetch("http://localhost:5000/create_folder", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-               username: username,
-               folder_name: folderName,
-               parent_id: parentId ?? null,
-            }),
+         const username = localStorage.getItem("username");
+         await axios.post("http://localhost:5000/create_folder", {
+            username,
+            folder_name: folderName,
          });
 
-         const data = await response.json();
-         if (response.ok) {
-            fetchFolders(parentId);
-         } else {
-            console.error("Error creating folder:", data.message);
-         }
+         fetchFolders();
       } catch (error) {
-         console.error("Network error:", error);
+         console.error("Error creating folder:", error);
       }
    };
 
    return (
       <div className="library-container">
-         <div className="library-title">Library</div>
-         <div className="library-file-path">
-            <span>/</span>
+         <div className="library-header">
+            <div className="library-title">Library</div>
+            <div className="library-file-path">
+               <span>/ CSF / Note 123</span>
+            </div>
          </div>
+
+         <div className="library-folder-managment-container">
+            <button className="button-add-folder" onClick={addFolder}>
+               + New Folder
+            </button>
+         </div>
+
+         <ul className="folder-list">
+            {folders.map((folder) => (
+               <li key={folder.id} className="folder-item">
+                  📁 {folder.name}
+               </li>
+            ))}
+         </ul>
       </div>
    );
 }
