@@ -256,11 +256,28 @@ def delete_folder():
 
     try:
         cur = mysql.connection.cursor()
+
+        # Função recursiva para excluir subpastas
+        def delete_subfolders(folder_id):
+            cur.execute('SELECT id FROM folders WHERE parent_id = %s', (folder_id,))
+            subfolders = cur.fetchall()
+
+            for subfolder in subfolders:
+                delete_subfolders(subfolder[0])  # Recursão para excluir subpastas
+                cur.execute('DELETE FROM folders WHERE id = %s', (subfolder[0],))
+
+        # Excluir as subpastas antes de excluir a pasta principal
+        delete_subfolders(folder_id)
+
+        # Excluir a pasta
         cur.execute('DELETE FROM folders WHERE id = %s', (folder_id,))
         mysql.connection.commit()
+
         cur.close()
-        return jsonify({'message': 'Folder deleted successfully'}), 200
+
+        return jsonify({'message': 'Folder and subfolders deleted successfully'}), 200
     except Exception as e:
+        cur.close()
         return jsonify({'message': 'Error deleting folder', 'error': str(e)}), 500
 
 

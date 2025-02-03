@@ -524,13 +524,17 @@ body {
    color: #ffffff;
    border: none;
    padding: 10px 20px;
-   margin: 5px 50px 0 50px;
+   margin: 30px 50px 0 50px;
    cursor: pointer;
    border-radius: 5px;
    font-size: 0.9rem;
 }
 
 .button-add-folder:hover {
+   background-color: #2c2c2c;
+}
+
+.button-back-folder:hover {
    background-color: #2c2c2c;
 }
 
@@ -548,7 +552,7 @@ body {
 }
 
 .folder-item {
-   font-size: 1.1rem;
+   font-size: 1rem;
    color: white;
    background-color: #222;
    padding: 12px 15px;
@@ -556,11 +560,29 @@ body {
    cursor: pointer;
    width: 40%;
    display: flex;
-   text-overflow: ellipsis;
+   justify-content: space-between;
+   align-items: center;
+   position: relative;
+   overflow: hidden;
 }
 
 .folder-item:hover {
    background-color: #2c2c2c;
+}
+
+.delete-folder-button {
+   display: none;
+   position: absolute;
+   right: 10px;
+   background: none;
+   border: none;
+   color: #919191;
+   cursor: pointer;
+   font-size: 0.9rem;
+}
+
+.folder-item:hover .delete-folder-button {
+   display: block;
 }
 
 /* -------------------  MAIN PAGE ------------------- */
