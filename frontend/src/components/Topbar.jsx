@@ -13,9 +13,7 @@ function Topbar() {
    return (
       <div className="topbar">
          <div className="topbar-buttons">
-            <button className="topbar-profile-button">
-               {username ? username : "Profile"}
-            </button>
+            <button className="topbar-profile-button">{username ? username : "Profile"}</button>
             <button className="topbar-simple-button">Settings</button>
             <button className="topbar-simple-button" onClick={handleLogout}>
                Logout

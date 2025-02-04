@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-function Sidebar() {
+function Sidebar({ setView }) {
    const [isDialogOpen, setIsDialogOpen] = useState(false);
    const [taskInput, setTaskInput] = useState("");
    const [tasks, setTasks] = useState([]);
@@ -17,9 +17,7 @@ function Sidebar() {
       if (!username) return;
 
       try {
-         const response = await axios.get(
-            `http://localhost:5000/tasks?username=${username}`
-         );
+         const response = await axios.get(`http://localhost:5000/tasks?username=${username}`);
          if (response.status === 200) {
             setTasks(response.data.tasks);
          }
@@ -54,17 +52,10 @@ function Sidebar() {
 
    const toggleTaskCompletion = async (taskId, currentStatus) => {
       try {
-         const response = await axios.post(
-            "http://localhost:5000/complete_task",
-            { task_id: taskId }
-         );
+         const response = await axios.post("http://localhost:5000/complete_task", { task_id: taskId });
          if (response.status === 200) {
             setTasks((prevTasks) =>
-               prevTasks.map((task) =>
-                  task.id === taskId
-                     ? { ...task, completed: !currentStatus }
-                     : task
-               )
+               prevTasks.map((task) => (task.id === taskId ? { ...task, completed: !currentStatus } : task))
             );
          }
       } catch (error) {
@@ -74,17 +65,12 @@ function Sidebar() {
 
    const deleteTask = async (taskId) => {
       try {
-         const response = await axios.post(
-            "http://localhost:5000/delete_task",
-            {
-               task_id: taskId,
-            }
-         );
+         const response = await axios.post("http://localhost:5000/delete_task", {
+            task_id: taskId,
+         });
 
          if (response.status === 200) {
-            setTasks((prevTasks) =>
-               prevTasks.filter((task) => task.id !== taskId)
-            );
+            setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
          }
       } catch (error) {
          console.error("Error deleting task:", error);
@@ -93,12 +79,9 @@ function Sidebar() {
 
    const deleteAllTasks = async () => {
       try {
-         const response = await axios.post(
-            "http://localhost:5000/delete_all_tasks",
-            {
-               username: localStorage.getItem("username"),
-            }
-         );
+         const response = await axios.post("http://localhost:5000/delete_all_tasks", {
+            username: localStorage.getItem("username"),
+         });
 
          if (response.status === 200) {
             setTasks([]);
@@ -117,7 +100,9 @@ function Sidebar() {
          <div className="note-title">
             Note<div className="it-title">It</div>
          </div>
-         <button className="button-library">Library</button>
+         <button className="button-new-note" onClick={() => setView("note")}>
+            New Note
+         </button>
          <button className="button-new-task" onClick={openDialog}>
             New Task
          </button>
@@ -127,27 +112,11 @@ function Sidebar() {
             {tasks.length > 0 ? (
                tasks.map((task) => (
                   <div key={task.id} className="task-item">
-                     <button
-                        className="task-icon-button"
-                        onClick={() =>
-                           toggleTaskCompletion(task.id, task.completed)
-                        }
-                     >
-                        <i
-                           className={`fa-2x ${
-                              task.completed
-                                 ? "fas fa-check-circle"
-                                 : "far fa-circle"
-                           }`}
-                        ></i>
+                     <button className="task-icon-button" onClick={() => toggleTaskCompletion(task.id, task.completed)}>
+                        <i className={`fa-2x ${task.completed ? "fas fa-check-circle" : "far fa-circle"}`}></i>
                      </button>
-                     <span className={task.completed ? "task-completed" : ""}>
-                        {task.task}
-                     </span>
-                     <button
-                        className="delete-task-icon"
-                        onClick={() => deleteTask(task.id)}
-                     >
+                     <span className={task.completed ? "task-completed" : ""}>{task.task}</span>
+                     <button className="delete-task-icon" onClick={() => deleteTask(task.id)}>
                         <i className="fas fa-trash-alt fa-lg"></i>
                      </button>
                   </div>
@@ -174,22 +143,16 @@ function Sidebar() {
                   if (e.target === e.currentTarget) {
                      closeDialog();
                   }
-               }}
-            >
+               }}>
                <div className="dialog-newtask-box">
                   <form onSubmit={addTask}>
                      <textarea
                         className="task-input"
                         value={taskInput}
                         onChange={(e) => setTaskInput(e.target.value)}
-                        placeholder="Enter task..."
-                     ></textarea>
+                        placeholder="Enter task..."></textarea>
                      <div className="task-input-container">
-                        <button
-                           type="button"
-                           className="button-task-input-cancel"
-                           onClick={closeDialog}
-                        >
+                        <button type="button" className="button-task-input-cancel" onClick={closeDialog}>
                            Cancel
                         </button>
                         <button type="submit" className="button-task-input-add">

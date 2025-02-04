@@ -204,6 +204,7 @@ def delete_all_tasks():
 
 # --------------------------------------- Folders ---------------------------------------
 
+# Add a folder
 @app.route('/create_folder', methods=['POST'])
 def create_folder():
     data = request.json
@@ -225,7 +226,8 @@ def create_folder():
         return jsonify({'message': 'Folder created successfully'}), 201
     except Exception as e:
         return jsonify({'message': 'Error creating folder', 'error': str(e)}), 500
-    
+
+# Get folders
 @app.route('/get_folders', methods=['GET'])
 def get_folders():
     username = request.args.get('username')
@@ -246,6 +248,17 @@ def get_folders():
     except Exception as e:
         return jsonify({'message': 'Error fetching folders', 'error': str(e)}), 500
 
+# Auxiliar function to recursively delete subfolders
+def delete_subfolders(folder_id):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT id FROM folders WHERE parent_id = %s', (folder_id,))
+    subfolders = cur.fetchall()
+
+    for subfolder in subfolders:
+        delete_subfolders(subfolder[0])
+        cur.execute('DELETE FROM folders WHERE id = %s', (subfolder[0],))
+
+# Delete a folder
 @app.route('/delete_folder', methods=['POST'])
 def delete_folder():
     data = request.json
@@ -255,21 +268,9 @@ def delete_folder():
         return jsonify({'message': 'Folder ID is required'}), 400
 
     try:
-        cur = mysql.connection.cursor()
-
-        # Função recursiva para excluir subpastas
-        def delete_subfolders(folder_id):
-            cur.execute('SELECT id FROM folders WHERE parent_id = %s', (folder_id,))
-            subfolders = cur.fetchall()
-
-            for subfolder in subfolders:
-                delete_subfolders(subfolder[0])  # Recursão para excluir subpastas
-                cur.execute('DELETE FROM folders WHERE id = %s', (subfolder[0],))
-
-        # Excluir as subpastas antes de excluir a pasta principal
         delete_subfolders(folder_id)
-
-        # Excluir a pasta
+        
+        cur = mysql.connection.cursor()
         cur.execute('DELETE FROM folders WHERE id = %s', (folder_id,))
         mysql.connection.commit()
 
@@ -279,7 +280,71 @@ def delete_folder():
     except Exception as e:
         cur.close()
         return jsonify({'message': 'Error deleting folder', 'error': str(e)}), 500
+    
+# --------------------------------------- Notes ---------------------------------------
 
+# Add a note
+@app.route('/add_note', methods=['POST'])
+def add_note():
+    data = request.json
+    username = data.get('username')
+    folder_id = data.get('folder_id')
+    note_title = data.get('note_title')
+    note_text = data.get('note_text')
+
+    if not username or not folder_id or not note_text or not note_title:
+        return jsonify({'message': 'Username, folder_id, and note_text are required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            'INSERT INTO notes (title, text, username, folder_id) VALUES (%s, %s, %s)',
+            (note_title, note_text, username, folder_id)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'message': 'Note added successfully'}), 201
+    except Exception as e:
+        return jsonify({'message': 'Error adding note', 'error': str(e)}), 500
+
+# Get notes
+@app.route('/get_notes', methods=['GET'])
+def get_notes():
+    username = request.args.get('username')
+    folder_id = request.args.get('folder_id')
+
+    if not username:
+        return jsonify({'message': 'Username is required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            'SELECT id, title, text FROM notes WHERE username = %s AND folder_id = %s',
+            (username, folder_id)
+        )
+        notes = [{'id': row[0], 'title': row[1], 'text': row[2]} for row in cur.fetchall()]
+        cur.close()
+        return jsonify({'notes': notes}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error fetching notes', 'error': str(e)}), 500
+
+# Delete a note
+@app.route('/delete_note', methods=['POST'])
+def delete_note():
+    data = request.json
+    note_id = data.get('note_id')
+
+    if not note_id:
+        return jsonify({'message': 'Note ID is required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('DELETE FROM notes WHERE id = %s', (note_id,))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'message': 'Note deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error deleting note', 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

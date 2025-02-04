@@ -171,11 +171,11 @@ body {
    display: inline-block;
 }
 
-.button-library {
+.button-new-note {
    background-color: #7ab8ff;
    color: #ffffff;
    border: none;
-   padding: 23px 98px;
+   padding: 23px 87px;
    margin: 60px auto 0 auto;
    cursor: pointer;
    border-radius: 7px;
@@ -185,7 +185,7 @@ body {
    font-weight: 600;
 }
 
-.button-library:hover {
+.button-new-note:hover {
    background-color: #5a9ae6;
 }
 
@@ -583,6 +583,69 @@ body {
 
 .folder-item:hover .delete-folder-button {
    display: block;
+}
+
+/* -------------------  NOTES ------------------- */
+
+.note-container {
+   display: flex;
+   flex-direction: column;
+   padding: 120px 50px 0 350px;
+   background-color: #181818;
+   color: #ffffff;
+   min-height: 80vh;
+   overflow: auto;
+}
+
+.note-title-input {
+   background-color: #292929;
+   color: #ffffff;
+   padding: 15px;
+   border: 1px solid #414141;
+   border-radius: 7px;
+   font-size: 0.9rem;
+   outline: none;
+   margin: 50px auto 20px auto;
+   width: 40%;
+}
+
+.note-title-input:focus {
+   border-color: #7ab8ff;
+}
+
+.note-content {
+   display: flex;
+   gap: 20px;
+   height: 650px;
+}
+
+.markdown-editor,
+.markdown-preview {
+   width: 40%;
+   padding: 15px;
+   border: 1px solid #414141;
+   border-radius: 7px;
+   background-color: #292929;
+   color: #ffffff;
+   overflow-y: auto;
+   resize: none;
+   margin: 10px auto 20px auto;
+}
+
+.markdown-editor {
+   font-family: monospace;
+   outline: none;
+   font-size: 1rem;
+}
+
+.markdown-editor:focus {
+   border-color: #7ab8ff;
+}
+
+.markdown-preview {
+   background-color: #202020;
+   border-left: 3px solid #7ab8ff;
+   word-wrap: break-word;
 }
 
 /* -------------------  MAIN PAGE ------------------- */

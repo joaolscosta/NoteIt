@@ -104,6 +104,17 @@ CREATE TABLE IF NOT EXISTS folders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE
 );
+-- Create notes table
+DROP TABLE IF EXISTS notes;
+CREATE TABLE IF NOT EXISTS notes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    text TEXT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    folder_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE CASCADE
+);
 EOF
 
 # Start the Flask server

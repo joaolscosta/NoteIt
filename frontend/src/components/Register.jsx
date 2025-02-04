@@ -31,25 +31,17 @@ function Register({ onSwitch }) {
          const data = await registerUser(username, password);
 
          if (data.message === "User registered successfully") {
-            setDialogMessage(
-               "Registration Successful! Your account has been created."
-            );
+            setDialogMessage("Registration Successful! Your account has been created.");
          } else if (data.message === "Username already exists") {
-            setDialogMessage(
-               "Username already exists. Please choose a different username."
-            );
+            setDialogMessage("Username already exists. Please choose a different username.");
          } else {
-            setDialogMessage(
-               data.message || "Something went wrong. Please try again."
-            );
+            setDialogMessage(data.message || "Something went wrong. Please try again.");
          }
 
-         setIsDialogOpen(true); // Open the dialog with the appropriate message
+         setIsDialogOpen(true);
       } catch (error) {
          console.error("Error registering:", error);
-         setDialogMessage(
-            error.message || "An error occurred during registration."
-         );
+         setDialogMessage(error.message || "An error occurred during registration.");
          setIsDialogOpen(true);
       }
    };
@@ -91,23 +83,16 @@ function Register({ onSwitch }) {
          {isDialogOpen && (
             <div className="dialog-register-overlay">
                <div className="dialog-register-box">
-                  <h3>
-                     {dialogMessage.includes("Successful")
-                        ? "Success!"
-                        : "Error"}
-                  </h3>
+                  <h3>{dialogMessage.includes("Successful") ? "Success!" : "Error"}</h3>
                   <p>{dialogMessage}</p>
                   <button
                      onClick={() => {
                         setIsDialogOpen(false);
                         if (dialogMessage.includes("Successful")) {
-                           onSwitch(); // Switch to login if registration was successful
+                           onSwitch();
                         }
-                     }}
-                  >
-                     {dialogMessage.includes("Successful")
-                        ? "Go to Login"
-                        : "Try Again"}
+                     }}>
+                     {dialogMessage.includes("Successful") ? "Go to Login" : "Try Again"}
                   </button>
                </div>
             </div>
