@@ -597,6 +597,14 @@ body {
    overflow: auto;
 }
 
+.note-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin: 15px auto 30px auto;
+   width: 40%;
+}
+
 .note-title-input {
    background-color: #292929;
    color: #ffffff;
@@ -605,23 +613,37 @@ body {
    border-radius: 7px;
    font-size: 0.9rem;
    outline: none;
-   margin: 50px auto 20px auto;
-   width: 40%;
+   width: 80%;
 }
 
 .note-title-input:focus {
    border-color: #7ab8ff;
 }
 
+.button-save-note {
+   background-color: #7ab8ff;
+   color: #ffffff;
+   border: none;
+   padding: 16px 20px;
+   cursor: pointer;
+   border-radius: 7px;
+   font-size: 0.9rem;
+   text-align: center;
+}
+
+.button-save-note:hover {
+   background-color: #5a9ae6;
+}
+
 .note-content {
    display: flex;
    gap: 20px;
-   height: 650px;
+   height: 730px;
 }
 
 .markdown-editor,
 .markdown-preview {
-   width: 40%;
+   width: 100%;
    padding: 15px;
    border: 1px solid #414141;
    border-radius: 7px;
@@ -635,7 +657,7 @@ body {
 .markdown-editor {
    font-family: monospace;
    outline: none;
-   font-size: 1rem;
+   font-size: 0.9rem;
 }
 
 .markdown-editor:focus {
@@ -643,6 +665,8 @@ body {
 }
 
 .markdown-preview {
+   font-size: 0.9rem;
+
    background-color: #202020;
    border-left: 3px solid #7ab8ff;
    word-wrap: break-word;

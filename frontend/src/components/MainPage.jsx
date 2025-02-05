@@ -6,12 +6,17 @@ import Note from "./Note";
 
 const MainPage = () => {
    const [view, setView] = useState("library");
+   const [currentFolder, setCurrentFolder] = useState(null);
 
    return (
       <div className="main-page">
          <Topbar />
          <Sidebar setView={setView} />
-         {view === "library" ? <Library /> : <Note />}
+         {view === "library" ? (
+            <Library setView={setView} setCurrentFolder={setCurrentFolder} />
+         ) : (
+            <Note currentFolder={currentFolder} />
+         )}
       </div>
    );
 };
