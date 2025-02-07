@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { marked } from "marked";
 import axios from "axios";
 
-const Note = ({ currentFolder }) => {
+const Note = ({ currentFolder, setView }) => {
    const [title, setTitle] = useState("");
    const [content, setContent] = useState("");
 
@@ -36,6 +36,9 @@ const Note = ({ currentFolder }) => {
    return (
       <div className="note-container">
          <div className="note-header">
+            <button className="button-back-library" onClick={() => setView("library")}>
+               Library
+            </button>
             <input
                type="text"
                className="note-title-input"

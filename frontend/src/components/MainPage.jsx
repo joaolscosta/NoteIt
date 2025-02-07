@@ -6,7 +6,7 @@ import Note from "./Note";
 
 const MainPage = () => {
    const [view, setView] = useState("library");
-   const [currentFolder, setCurrentFolder] = useState(null);
+   const [currentFolder, setCurrentFolder] = useState("/");
 
    return (
       <div className="main-page">
@@ -15,7 +15,7 @@ const MainPage = () => {
          {view === "library" ? (
             <Library setView={setView} setCurrentFolder={setCurrentFolder} />
          ) : (
-            <Note currentFolder={currentFolder} />
+            <Note currentFolder={currentFolder} setView={setView} />
          )}
       </div>
    );

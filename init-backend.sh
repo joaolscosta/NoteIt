@@ -78,7 +78,7 @@ EOF
 # Initialize the database schema
 echo "Initializing the database schema..."
 mysql -u "${DB_USER}" -p"${DB_PASSWORD}" ${DB_NAME} <<EOF
--- Create users table
+-- users table
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL
 );
 
--- Create tasks table
+-- tasks table
 DROP TABLE IF EXISTS tasks;
 CREATE TABLE IF NOT EXISTS tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -95,7 +95,11 @@ CREATE TABLE IF NOT EXISTS tasks (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed BOOLEAN DEFAULT FALSE
 );
+
+DROP TABLE IF EXISTS notes;
 DROP TABLE IF EXISTS folders;
+
+-- folders table
 CREATE TABLE IF NOT EXISTS folders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -104,8 +108,8 @@ CREATE TABLE IF NOT EXISTS folders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE
 );
--- Create notes table
-DROP TABLE IF EXISTS notes;
+
+-- notes table
 CREATE TABLE IF NOT EXISTS notes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,

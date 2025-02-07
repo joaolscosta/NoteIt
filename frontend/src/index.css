@@ -605,6 +605,22 @@ body {
    width: 40%;
 }
 
+.button-back-library {
+   background-color: #313131;
+   border: 1px solid #414141;
+   color: #ffffff;
+   padding: 15px 15px;
+   margin-right: 20px;
+   cursor: pointer;
+   border-radius: 7px;
+   font-size: 0.9rem;
+   text-align: center;
+}
+
+.button-back-library:hover {
+   background-color: #2c2c2c;
+}
+
 .note-title-input {
    background-color: #292929;
    color: #ffffff;
@@ -625,6 +641,7 @@ body {
    color: #ffffff;
    border: none;
    padding: 16px 20px;
+   margin-left: 20px;
    cursor: pointer;
    border-radius: 7px;
    font-size: 0.9rem;
