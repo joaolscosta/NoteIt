@@ -293,12 +293,12 @@ def add_note():
     note_text = data.get('note_text')
 
     if not username or not folder_id or not note_text or not note_title:
-        return jsonify({'message': 'Username, folder_id, and note_text are required'}), 400
+        return jsonify({'message': 'Username, folder_id, note_title, and note_text are required'}), 400
 
     try:
         cur = mysql.connection.cursor()
         cur.execute(
-            'INSERT INTO notes (title, text, username, folder_id) VALUES (%s, %s, %s)',
+            'INSERT INTO notes (title, text, username, folder_id) VALUES (%s, %s, %s, %s)',
             (note_title, note_text, username, folder_id)
         )
         mysql.connection.commit()
@@ -306,6 +306,7 @@ def add_note():
         return jsonify({'message': 'Note added successfully'}), 201
     except Exception as e:
         return jsonify({'message': 'Error adding note', 'error': str(e)}), 500
+
 
 # Get notes
 @app.route('/get_notes', methods=['GET'])
@@ -345,6 +346,39 @@ def delete_note():
         return jsonify({'message': 'Note deleted successfully'}), 200
     except Exception as e:
         return jsonify({'message': 'Error deleting note', 'error': str(e)}), 500
+
+# Get folders and notes
+@app.route('/get_folders_and_notes', methods=['GET'])
+def get_folders_and_notes():
+    username = request.args.get('username')
+    parent_id = request.args.get('parent_id', None)  # None if root folders
+
+    if not username:
+        return jsonify({'message': 'Username is required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+
+        # Get folders
+        cur.execute(
+            'SELECT id, name FROM folders WHERE username = %s AND parent_id <=> %s',
+            (username, parent_id)
+        )
+        folders = [{'id': row[0], 'name': row[1]} for row in cur.fetchall()]
+
+        # Get notes
+        cur.execute(
+            'SELECT id, title, text FROM notes WHERE username = %s AND folder_id <=> %s',
+            (username, parent_id)
+        )
+        notes = [{'id': row[0], 'title': row[1], 'text': row[2]} for row in cur.fetchall()]
+
+        cur.close()
+
+        return jsonify({'folders': folders, 'notes': notes}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error fetching folders and notes', 'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

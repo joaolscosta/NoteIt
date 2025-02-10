@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-function Library() {
+function Library({ setView, currentFolder, setCurrentFolder }) {
    const [folders, setFolders] = useState([]);
-   const [path, setPath] = useState(["/"]);
+   const [path, setPath] = useState([{ id: null, name: " " }]);
 
    useEffect(() => {
       fetchFolders();
-   }, [path]);
+   }, [currentFolder]);
 
    const fetchFolders = async () => {
       try {
          const username = localStorage.getItem("username");
-         const parentId = path.length > 1 ? path[path.length - 1].id : null;
+         const parentId = currentFolder.id;
          const response = await axios.get("http://localhost:5000/get_folders", {
             params: { username, parent_id: parentId },
          });
@@ -24,15 +24,14 @@ function Library() {
 
    const addFolder = async () => {
       const folderName = prompt("Enter folder name:");
-      if (!folderName) return;
-
-      if (folderName.length > 30) {
-         alert("Folder name should be less than 30 characters");
+      if (!folderName || folderName.length > 30) {
+         alert("Folder name should be less than 30 characters.");
          return;
       }
+
       try {
          const username = localStorage.getItem("username");
-         const parentId = path.length > 1 ? path[path.length - 1].id : null;
+         const parentId = currentFolder.id;
          await axios.post("http://localhost:5000/create_folder", {
             username,
             folder_name: folderName,
@@ -46,20 +45,27 @@ function Library() {
    };
 
    const handleFolderClick = (folder) => {
-      setPath((prevPath) => [...prevPath, folder]);
+      setCurrentFolder(folder);
+      setPath([...path, folder]);
+   };
+
+   const handlePathClick = (index) => {
+      const newPath = path.slice(0, index + 1);
+      setPath(newPath);
+      setCurrentFolder(newPath[index]);
    };
 
    const handleBackClick = () => {
-      setPath((prevPath) => prevPath.slice(0, prevPath.length - 1));
+      if (path.length > 1) {
+         const newPath = path.slice(0, -1);
+         setPath(newPath);
+         setCurrentFolder(newPath[newPath.length - 1]);
+      }
    };
 
    const deleteFolder = async (folderId, folderName, event) => {
       event.stopPropagation();
-
-      if (!window.confirm(`Are you sure you want to delete the folder "${folderName}"?`)) {
-         // TODO: change to dialog
-         return;
-      }
+      if (!window.confirm(`Are you sure you want to delete the folder "${folderName}"?`)) return;
 
       try {
          await axios.post("http://localhost:5000/delete_folder", { folder_id: folderId });
@@ -76,7 +82,13 @@ function Library() {
             <div className="library-file-path">
                {path.map((folder, index) => (
                   <span key={index}>
-                     {folder === "/" ? "" : folder.name}
+                     {index < path.length - 1 ? (
+                        <a className="library-file-path" onClick={() => handlePathClick(index)}>
+                           {folder.name}
+                        </a>
+                     ) : (
+                        <span>{folder.name}</span>
+                     )}
                      {index < path.length - 1 && " / "}
                   </span>
                ))}
