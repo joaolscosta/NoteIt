@@ -6,10 +6,41 @@ const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRo
    const [title, setTitle] = useState(selectedNote?.title || "");
    const [content, setContent] = useState(selectedNote?.text || "");
    const [isSaving, setIsSaving] = useState(false);
+   const [isDeleting, setIsDeleting] = useState(false);
+   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
    const handleBack = () => {
       setSelectedNote(null);
       setView("library");
+   };
+
+   const handleDelete = async () => {
+      if (!selectedNote?.id) return;
+
+      setIsDeleting(true);
+      try {
+         const response = await axios.post("http://localhost:5000/delete_note", {
+            note_id: selectedNote.id,
+         });
+
+         if (response.status === 200) {
+            setShowDeleteDialog(false);
+            resetToRoot();
+         }
+      } catch (error) {
+         console.error("Error deleting note:", error);
+         alert("Failed to delete note: " + (error.response?.data?.message || "Please try again."));
+      } finally {
+         setIsDeleting(false);
+      }
+   };
+
+   const handleDeleteClick = () => {
+      setShowDeleteDialog(true);
+   };
+
+   const handleCancelDelete = () => {
+      setShowDeleteDialog(false);
    };
 
    const handleSave = async () => {
@@ -71,6 +102,26 @@ const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRo
                disabled={!title.trim() || !content.trim() || isSaving}>
                {isSaving ? "Saving..." : "Save"}
             </button>
+            {selectedNote?.id && (
+               <button className="button-delete-note" onClick={handleDeleteClick} disabled={isDeleting}>
+                  {isDeleting ? "Deleting..." : "Delete"}
+               </button>
+            )}
+
+            {showDeleteDialog && (
+               <div className="dialog-overlay">
+                  <div className="dialog">
+                     <h2>Delete Note</h2>
+                     <p>Are you sure you want to delete this note? This action cannot be undone.</p>
+                     <div className="dialog-buttons">
+                        <button onClick={handleCancelDelete}>Cancel</button>
+                        <button className="delete-button" onClick={handleDelete} disabled={isDeleting}>
+                           {isDeleting ? "Deleting..." : "Delete"}
+                        </button>
+                     </div>
+                  </div>
+               </div>
+            )}
          </div>
 
          <div className="note-content">

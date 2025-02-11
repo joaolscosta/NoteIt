@@ -490,7 +490,7 @@ body {
 
 .library-container {
    display: fixed;
-   padding: 120px 50px 0 350px;
+   padding: 80px 50px 0 350px;
    overflow: hidden;
 }
 
@@ -789,8 +789,8 @@ body {
    border-color: #7ab8ff;
 }
 
-.button-save-note {
-   background-color: #7ab8ff;
+.button-save-note,
+.button-delete-note {
    color: #ffffff;
    border: none;
    padding: 16px 20px;
@@ -799,6 +799,18 @@ body {
    border-radius: 7px;
    font-size: 0.9rem;
    text-align: center;
+}
+
+.button-save-note {
+   background-color: #7ab8ff;
+}
+
+.button-delete-note {
+   background-color: #ff6363;
+}
+
+.button-delete-note:hover {
+   background-color: #e63e3e;
 }
 
 .button-save-note:hover:not(:disabled) {
