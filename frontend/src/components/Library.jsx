@@ -3,6 +3,7 @@ import axios from "axios";
 
 function Library({ setView, currentFolder, setCurrentFolder }) {
    const [folders, setFolders] = useState([]);
+   const [notes, setNotes] = useState([]);
    const [path, setPath] = useState([{ id: null, name: " " }]);
    const [isDialogOpen, setIsDialogOpen] = useState(false);
    const [newFolderName, setNewFolderName] = useState("");
@@ -11,6 +12,7 @@ function Library({ setView, currentFolder, setCurrentFolder }) {
 
    useEffect(() => {
       fetchFolders();
+      fetchNotes();
    }, [currentFolder]);
 
    const fetchFolders = async () => {
@@ -23,6 +25,18 @@ function Library({ setView, currentFolder, setCurrentFolder }) {
          setFolders(response.data.folders);
       } catch (error) {
          console.error("Error fetching folders:", error);
+      }
+   };
+
+   const fetchNotes = async () => {
+      try {
+         const username = localStorage.getItem("username");
+         const response = await axios.get("http://localhost:5000/get_notes", {
+            params: { username, folder_id: currentFolder.id },
+         });
+         setNotes(response.data.notes);
+      } catch (error) {
+         console.error("Error fetching notes:", error);
       }
    };
 
@@ -150,16 +164,35 @@ function Library({ setView, currentFolder, setCurrentFolder }) {
             )}
          </div>
 
-         <ul className="folder-list">
-            {folders.map((folder) => (
-               <li key={folder.id} className="folder-item" onClick={() => handleFolderClick(folder)}>
-                  📁 {folder.name}
-                  <button className="delete-folder-button" onClick={(event) => handleDeleteDialogOpen(folder, event)}>
-                     <i className="fas fa-trash-alt fa-lg"></i>
-                  </button>
-               </li>
-            ))}
-         </ul>
+         <div className="library-content">
+            <div className="folders-section">
+               <h2>Folders</h2>
+               <ul className="folder-list">
+                  {folders.map((folder) => (
+                     <li key={folder.id} className="folder-item" onClick={() => handleFolderClick(folder)}>
+                        📁 {folder.name}
+                        <button
+                           className="delete-folder-button"
+                           onClick={(event) => handleDeleteDialogOpen(folder, event)}>
+                           <i className="fas fa-trash-alt fa-lg"></i>
+                        </button>
+                     </li>
+                  ))}
+               </ul>
+            </div>
+
+            <div className="notes-section">
+               <h2>Notes</h2>
+               <div className="notes-grid">
+                  {notes.map((note) => (
+                     <div key={note.id} className="note-card" onClick={() => setView("note")}>
+                        <div className="note-card-title">{note.title}</div>
+                        <div className="note-card-preview">{note.text.substring(0, 100)}...</div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+         </div>
 
          {deleteDialogOpen && (
             <div className="dialog-overlay">

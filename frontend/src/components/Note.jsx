@@ -2,9 +2,34 @@ import React, { useState } from "react";
 import { marked } from "marked";
 import axios from "axios";
 
-const Note = ({ setView }) => {
+const Note = ({ setView, currentFolder }) => {
    const [title, setTitle] = useState("");
    const [content, setContent] = useState("");
+   const [isSaving, setIsSaving] = useState(false);
+
+   const handleSave = async () => {
+      if (!title.trim() || !content.trim() || !currentFolder?.id) return;
+
+      setIsSaving(true);
+      try {
+         const username = localStorage.getItem("username");
+         const response = await axios.post("http://localhost:5000/add_note", {
+            username,
+            folder_id: currentFolder.id,
+            note_title: title.trim(),
+            note_text: content.trim(),
+         });
+
+         if (response.status === 201) {
+            setView("library");
+         }
+      } catch (error) {
+         console.error("Error saving note:", error);
+         alert("Failed to save note. Please try again.");
+      } finally {
+         setIsSaving(false);
+      }
+   };
 
    return (
       <div className="note-container">
@@ -19,7 +44,12 @@ const Note = ({ setView }) => {
                value={title}
                onChange={(e) => setTitle(e.target.value)}
             />
-            <div className="button-save-note">Save</div>
+            <button
+               className={`button-save-note ${!title.trim() || !content.trim() ? "disabled" : ""}`}
+               onClick={handleSave}
+               disabled={!title.trim() || !content.trim() || isSaving}>
+               {isSaving ? "Saving..." : "Save"}
+            </button>
          </div>
 
          <div className="note-content">
