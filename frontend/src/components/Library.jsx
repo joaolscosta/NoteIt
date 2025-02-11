@@ -4,6 +4,10 @@ import axios from "axios";
 function Library({ setView, currentFolder, setCurrentFolder }) {
    const [folders, setFolders] = useState([]);
    const [path, setPath] = useState([{ id: null, name: " " }]);
+   const [isDialogOpen, setIsDialogOpen] = useState(false);
+   const [newFolderName, setNewFolderName] = useState("");
+   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+   const [folderToDelete, setFolderToDelete] = useState(null);
 
    useEffect(() => {
       fetchFolders();
@@ -22,9 +26,18 @@ function Library({ setView, currentFolder, setCurrentFolder }) {
       }
    };
 
+   const handleDialogOpen = () => {
+      setIsDialogOpen(true);
+      setNewFolderName("");
+   };
+
+   const handleDialogClose = () => {
+      setIsDialogOpen(false);
+      setNewFolderName("");
+   };
+
    const addFolder = async () => {
-      const folderName = prompt("Enter folder name:");
-      if (!folderName || folderName.length > 30) {
+      if (!newFolderName || newFolderName.length > 30) {
          alert("Folder name should be less than 30 characters.");
          return;
       }
@@ -34,11 +47,12 @@ function Library({ setView, currentFolder, setCurrentFolder }) {
          const parentId = currentFolder.id;
          await axios.post("http://localhost:5000/create_folder", {
             username,
-            folder_name: folderName,
+            folder_name: newFolderName,
             parent_id: parentId,
          });
 
          fetchFolders();
+         handleDialogClose();
       } catch (error) {
          console.error("Error creating folder:", error);
       }
@@ -63,13 +77,24 @@ function Library({ setView, currentFolder, setCurrentFolder }) {
       }
    };
 
-   const deleteFolder = async (folderId, folderName, event) => {
+   const handleDeleteDialogOpen = (folder, event) => {
       event.stopPropagation();
-      if (!window.confirm(`Are you sure you want to delete the folder "${folderName}"?`)) return;
+      setFolderToDelete(folder);
+      setDeleteDialogOpen(true);
+   };
+
+   const handleDeleteDialogClose = () => {
+      setDeleteDialogOpen(false);
+      setFolderToDelete(null);
+   };
+
+   const deleteFolder = async () => {
+      if (!folderToDelete) return;
 
       try {
-         await axios.post("http://localhost:5000/delete_folder", { folder_id: folderId });
+         await axios.post("http://localhost:5000/delete_folder", { folder_id: folderToDelete.id });
          fetchFolders();
+         handleDeleteDialogClose();
       } catch (error) {
          console.error("Error deleting folder:", error);
       }
@@ -96,9 +121,28 @@ function Library({ setView, currentFolder, setCurrentFolder }) {
          </div>
 
          <div className="library-folder-managment-container">
-            <button className="button-add-folder" onClick={addFolder}>
+            <button className="button-add-folder" onClick={handleDialogOpen}>
                + New Folder
             </button>
+
+            {isDialogOpen && (
+               <div className="dialog-overlay">
+                  <div className="dialog">
+                     <h2>Create New Folder</h2>
+                     <input
+                        type="text"
+                        value={newFolderName}
+                        onChange={(e) => setNewFolderName(e.target.value)}
+                        placeholder="Enter folder name"
+                        maxLength={30}
+                     />
+                     <div className="dialog-buttons">
+                        <button onClick={handleDialogClose}>Cancel</button>
+                        <button onClick={addFolder}>Create</button>
+                     </div>
+                  </div>
+               </div>
+            )}
             {path.length > 1 && (
                <button className="button-add-folder" onClick={handleBackClick}>
                   Back
@@ -110,14 +154,27 @@ function Library({ setView, currentFolder, setCurrentFolder }) {
             {folders.map((folder) => (
                <li key={folder.id} className="folder-item" onClick={() => handleFolderClick(folder)}>
                   📁 {folder.name}
-                  <button
-                     className="delete-folder-button"
-                     onClick={(event) => deleteFolder(folder.id, folder.name, event)}>
+                  <button className="delete-folder-button" onClick={(event) => handleDeleteDialogOpen(folder, event)}>
                      <i className="fas fa-trash-alt fa-lg"></i>
                   </button>
                </li>
             ))}
          </ul>
+
+         {deleteDialogOpen && (
+            <div className="dialog-overlay">
+               <div className="dialog">
+                  <h2>Delete Folder</h2>
+                  <p>Are you sure you want to delete the folder "{folderToDelete?.name}"?</p>
+                  <div className="dialog-buttons">
+                     <button onClick={handleDeleteDialogClose}>Cancel</button>
+                     <button onClick={deleteFolder} className="delete-button">
+                        I'm sure
+                     </button>
+                  </div>
+               </div>
+            </div>
+         )}
       </div>
    );
 }

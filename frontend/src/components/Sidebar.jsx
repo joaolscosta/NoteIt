@@ -5,6 +5,7 @@ function Sidebar({ setView }) {
    const [isDialogOpen, setIsDialogOpen] = useState(false);
    const [taskInput, setTaskInput] = useState("");
    const [tasks, setTasks] = useState([]);
+   const [clearDialogOpen, setClearDialogOpen] = useState(false);
 
    const openDialog = () => setIsDialogOpen(true);
    const closeDialog = () => {
@@ -77,6 +78,14 @@ function Sidebar({ setView }) {
       }
    };
 
+   const handleClearDialogOpen = () => {
+      setClearDialogOpen(true);
+   };
+
+   const handleClearDialogClose = () => {
+      setClearDialogOpen(false);
+   };
+
    const deleteAllTasks = async () => {
       try {
          const response = await axios.post("http://localhost:5000/delete_all_tasks", {
@@ -85,6 +94,7 @@ function Sidebar({ setView }) {
 
          if (response.status === 200) {
             setTasks([]);
+            handleClearDialogClose();
          }
       } catch (error) {
          console.error("Error deleting all tasks:", error);
@@ -126,7 +136,7 @@ function Sidebar({ setView }) {
             )}
          </div>
          <div className="bottom-sidebar">
-            <button className="clear-tasks-button" onClick={deleteAllTasks}>
+            <button className="clear-tasks-button" onClick={handleClearDialogOpen}>
                Clear tasks
             </button>
             <div className="help-container">
@@ -160,6 +170,21 @@ function Sidebar({ setView }) {
                         </button>
                      </div>
                   </form>
+               </div>
+            </div>
+         )}
+
+         {clearDialogOpen && (
+            <div className="dialog-overlay">
+               <div className="dialog">
+                  <h2>Clear All Tasks</h2>
+                  <p>Are you sure you want to clear all tasks? This action cannot be undone.</p>
+                  <div className="dialog-buttons">
+                     <button onClick={handleClearDialogClose}>Cancel</button>
+                     <button onClick={deleteAllTasks} className="delete-button">
+                        I'm sure
+                     </button>
+                  </div>
                </div>
             </div>
          )}
