@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-function Library({ setView, currentFolder, setCurrentFolder }) {
+function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote }) {
    const [folders, setFolders] = useState([]);
    const [notes, setNotes] = useState([]);
    const [path, setPath] = useState([{ id: null, name: " " }]);
@@ -185,7 +185,13 @@ function Library({ setView, currentFolder, setCurrentFolder }) {
                <h2>Notes</h2>
                <div className="notes-grid">
                   {notes.map((note) => (
-                     <div key={note.id} className="note-card" onClick={() => setView("note")}>
+                     <div
+                        key={note.id}
+                        className="note-card"
+                        onClick={() => {
+                           setSelectedNote(note);
+                           setView("note");
+                        }}>
                         <div className="note-card-title">{note.title}</div>
                         <div className="note-card-preview">{note.text.substring(0, 100)}...</div>
                      </div>

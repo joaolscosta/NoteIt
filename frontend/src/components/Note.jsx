@@ -2,10 +2,15 @@ import React, { useState } from "react";
 import { marked } from "marked";
 import axios from "axios";
 
-const Note = ({ setView, currentFolder }) => {
-   const [title, setTitle] = useState("");
-   const [content, setContent] = useState("");
+const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRoot }) => {
+   const [title, setTitle] = useState(selectedNote?.title || "");
+   const [content, setContent] = useState(selectedNote?.text || "");
    const [isSaving, setIsSaving] = useState(false);
+
+   const handleBack = () => {
+      setSelectedNote(null);
+      setView("library");
+   };
 
    const handleSave = async () => {
       if (!title.trim() || !content.trim() || !currentFolder?.id) return;
@@ -13,19 +18,35 @@ const Note = ({ setView, currentFolder }) => {
       setIsSaving(true);
       try {
          const username = localStorage.getItem("username");
-         const response = await axios.post("http://localhost:5000/add_note", {
-            username,
-            folder_id: currentFolder.id,
-            note_title: title.trim(),
-            note_text: content.trim(),
-         });
+         const trimmedTitle = title.trim();
+         const trimmedContent = content.trim();
 
-         if (response.status === 201) {
-            setView("library");
+         if (selectedNote?.id) {
+            const response = await axios.post("http://localhost:5000/update_note", {
+               username,
+               note_id: selectedNote.id,
+               note_title: trimmedTitle,
+               note_text: trimmedContent,
+            });
+
+            if (response.status === 200) {
+               resetToRoot();
+            }
+         } else {
+            const response = await axios.post("http://localhost:5000/add_note", {
+               username,
+               folder_id: currentFolder.id,
+               note_title: trimmedTitle,
+               note_text: trimmedContent,
+            });
+
+            if (response.status === 201) {
+               resetToRoot();
+            }
          }
       } catch (error) {
          console.error("Error saving note:", error);
-         alert("Failed to save note. Please try again.");
+         alert("Failed to save note: " + (error.response?.data?.message || "Please try again."));
       } finally {
          setIsSaving(false);
       }
@@ -34,7 +55,7 @@ const Note = ({ setView, currentFolder }) => {
    return (
       <div className="note-container">
          <div className="note-header">
-            <button className="button-back-library" onClick={() => setView("library")}>
+            <button className="button-back-library" onClick={resetToRoot}>
                Library
             </button>
             <input

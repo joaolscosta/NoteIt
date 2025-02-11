@@ -328,6 +328,30 @@ def get_notes():
     except Exception as e:
         return jsonify({'message': 'Error fetching notes', 'error': str(e)}), 500
 
+# Update a note
+@app.route('/update_note', methods=['POST'])
+def update_note():
+    data = request.json
+    note_id = data.get('note_id')
+    note_title = data.get('note_title')
+    note_text = data.get('note_text')
+    username = data.get('username')
+
+    if not note_id or not note_title or not note_text or not username:
+        return jsonify({'message': 'Note ID, title, text, and username are required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            'UPDATE notes SET title = %s, text = %s WHERE id = %s AND username = %s',
+            (note_title, note_text, note_id, username)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'message': 'Note updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error updating note', 'error': str(e)}), 500
+
 # Delete a note
 @app.route('/delete_note', methods=['POST'])
 def delete_note():
