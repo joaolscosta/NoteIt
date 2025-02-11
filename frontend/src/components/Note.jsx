@@ -2,36 +2,9 @@ import React, { useState } from "react";
 import { marked } from "marked";
 import axios from "axios";
 
-const Note = ({ currentFolder, setView }) => {
+const Note = ({ setView }) => {
    const [title, setTitle] = useState("");
    const [content, setContent] = useState("");
-
-   const handleSave = async () => {
-      const username = localStorage.getItem("username");
-
-      if (!title.trim() || !content.trim()) {
-         alert("Please provide both a title and content for the note.");
-         return;
-      }
-
-      if (!currentFolder) {
-         alert("Please select a folder to save the note.");
-         return;
-      }
-
-      try {
-         await axios.post("http://localhost:5000/add_note", {
-            username,
-            folder_id: currentFolder.id,
-            note_title: title,
-            note_text: content,
-         });
-         alert("Note saved successfully!");
-      } catch (error) {
-         console.error("Error saving note:", error);
-         alert("Failed to save the note.");
-      }
-   };
 
    return (
       <div className="note-container">
@@ -46,9 +19,7 @@ const Note = ({ currentFolder, setView }) => {
                value={title}
                onChange={(e) => setTitle(e.target.value)}
             />
-            <div className="button-save-note" onClick={handleSave}>
-               Save
-            </div>
+            <div className="button-save-note">Save</div>
          </div>
 
          <div className="note-content">

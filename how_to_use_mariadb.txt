@@ -1,5 +1,0 @@
-mysql -u root -p
-SHOW DATABASES;
-USE noteit_db;
-SHOW TABLES;
-SELECT * FROM users;
