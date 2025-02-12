@@ -18,7 +18,7 @@ const MainPage = () => {
    return (
       <div className="main-page">
          <Topbar />
-         <Sidebar setView={setView} />
+         <Sidebar setView={setView} currentFolder={currentFolder} />
          {view === "library" ? (
             <Library
                setView={setView}

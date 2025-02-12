@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-function Sidebar({ setView }) {
+function Sidebar({ setView, currentFolder }) {
    const [isDialogOpen, setIsDialogOpen] = useState(false);
    const [taskInput, setTaskInput] = useState("");
    const [tasks, setTasks] = useState([]);
    const [clearDialogOpen, setClearDialogOpen] = useState(false);
+   const [showFolderWarning, setShowFolderWarning] = useState(false);
+   const [showMarkdownHelp, setShowMarkdownHelp] = useState(false);
 
    const openDialog = () => setIsDialogOpen(true);
    const closeDialog = () => {
@@ -110,7 +112,15 @@ function Sidebar({ setView }) {
          <div className="note-title">
             Note<div className="it-title">It</div>
          </div>
-         <button className="button-new-note" onClick={() => setView("note")}>
+         <button
+            className="button-new-note"
+            onClick={() => {
+               if (!currentFolder?.id) {
+                  setShowFolderWarning(true);
+               } else {
+                  setView("note");
+               }
+            }}>
             New Note
          </button>
          <button className="button-new-task" onClick={openDialog}>
@@ -140,11 +150,91 @@ function Sidebar({ setView }) {
                Clear tasks
             </button>
             <div className="help-container">
-               <button className="help-button">
+               <button className="help-button" onClick={() => setShowMarkdownHelp(true)}>
                   <i className="fas fa-question-circle"></i>Help
                </button>
             </div>
          </div>
+
+         {showMarkdownHelp && (
+            <div className="dialog-overlay">
+               <div className="dialog markdown-help">
+                  <h2>Markdown Guide</h2>
+                  <div className="markdown-instructions">
+                     <h3>Markdown Formatting Guide</h3>
+                     <ul>
+                        <li>
+                           Titles:
+                           <br />
+                           <code># Main Title</code>
+                           <br />
+                        </li>
+                        <li>
+                           Subtitles:
+                           <br />
+                           <code>## Subtitle</code>
+                           <br />
+                        </li>
+                        <li>
+                           Bold text:
+                           <br />
+                           <code>**important text**</code>
+                           <br />
+                        </li>
+                        <li>
+                           Italic text:
+                           <br />
+                           <code>*emphasized text*</code>
+                           <br />
+                        </li>
+                        <li>
+                           Bullet list:
+                           <br />
+                           <code>- first item</code>
+                           <br />
+                           <code>- second item</code>
+                           <br />
+                        </li>
+                        <li>
+                           Numbered list:
+                           <br />
+                           <code>1. first step</code>
+                           <br />
+                           <code>2. second step</code>
+                           <br />
+                        </li>
+                        <li>
+                           Code:
+                           <br />
+                           <code>`code here`</code>
+                           <br />
+                        </li>
+                        <li>
+                           Links:
+                           <br />
+                           <code>[text to show](https://url.com)</code>
+                           <br />
+                        </li>
+                     </ul>
+                  </div>
+                  <div className="dialog-buttons">
+                     <button onClick={() => setShowMarkdownHelp(false)}>Close</button>
+                  </div>
+               </div>
+            </div>
+         )}
+
+         {showFolderWarning && (
+            <div className="dialog-overlay">
+               <div className="dialog">
+                  <h2>Cannot Create Note Here</h2>
+                  <p>Please create or select a folder first before creating a note.</p>
+                  <div className="dialog-buttons">
+                     <button onClick={() => setShowFolderWarning(false)}>OK</button>
+                  </div>
+               </div>
+            </div>
+         )}
 
          {isDialogOpen && (
             <div
