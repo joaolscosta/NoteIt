@@ -867,6 +867,99 @@ body {
    opacity: 0.7;
 }
 
+/* Settings Dialog Styles */
+.dialog-overlay {
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background-color: rgba(0, 0, 0, 0.5);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   z-index: 99999;
+}
+
+.dialog {
+   background: #202020;
+   padding: 20px;
+   border-radius: 8px;
+   width: 100%;
+   max-width: 400px;
+   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dialog h2 {
+   margin-top: 0;
+   margin-bottom: 20px;
+   color: #fff;
+}
+
+.form-group {
+   margin-bottom: 15px;
+}
+
+.form-group label {
+   display: block;
+   margin-bottom: 5px;
+   color: #aaa;
+}
+
+.form-group input {
+   width: 100%;
+   padding: 8px;
+   background-color: #3c3c3e;
+   border: 1px solid #616161;
+   border-radius: 4px;
+   font-size: 14px;
+   color: #fff;
+}
+
+.form-group input:focus {
+   border-color: #7ab8ff;
+   outline: none;
+}
+
+.dialog-buttons {
+   display: flex;
+   justify-content: flex-end;
+   gap: 10px;
+   margin-top: 20px;
+}
+
+.dialog-buttons button {
+   padding: 8px 16px;
+   border: none;
+   border-radius: 4px;
+   cursor: pointer;
+   font-size: 14px;
+}
+
+.dialog-buttons button[type="submit"] {
+   background-color: #7ab8ff;
+   color: white;
+}
+
+.dialog-buttons button[type="submit"]:hover {
+   background-color: #5a9ae6;
+}
+
+.dialog-buttons button[type="button"] {
+   background-color: #727272;
+   color: white;
+}
+
+.dialog-buttons button[type="button"]:hover {
+   background-color: #5a5a5a;
+}
+
+.error-message {
+   color: #ff6b6b;
+   margin-top: 10px;
+   font-size: 14px;
+}
+
 .note-content {
    display: flex;
    gap: 20px;

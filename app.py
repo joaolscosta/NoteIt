@@ -370,5 +370,66 @@ def delete_note():
     except Exception as e:
         return jsonify({'message': 'Error deleting note', 'error': str(e)}), 500
 
+# --------------------------------------- User settings ---------------------------------------
+
+# Update user settings
+@app.route('/update-user', methods=['PUT'])
+def update_user():
+    data = request.json
+    current_username = data.get('currentUsername')
+    new_username = data.get('newUsername')
+    current_password = data.get('currentPassword')
+    new_password = data.get('newPassword')
+
+    if not current_username or not current_password:
+        return jsonify({'message': 'Current username and password are required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+
+        # Verify current password
+        cur.execute('SELECT password FROM users WHERE username = %s', (current_username,))
+        user = cur.fetchone()
+        if not user or not checkpw(current_password.encode('utf-8'), user[0].encode('utf-8')):
+            return jsonify({'message': 'Invalid current password'}), 401
+
+        # Check if new username already exists (if changing username)
+        if new_username and new_username != current_username:
+            cur.execute('SELECT COUNT(*) FROM users WHERE username = %s', (new_username,))
+            if cur.fetchone()[0] > 0:
+                return jsonify({'message': 'Username already exists'}), 409
+
+        # Update username in all related tables
+        if new_username and new_username != current_username:
+            # Update username in users table
+            cur.execute('UPDATE users SET username = %s WHERE username = %s', 
+                       (new_username, current_username))
+            
+            # Update username in tasks table
+            cur.execute('UPDATE tasks SET username = %s WHERE username = %s', 
+                       (new_username, current_username))
+            
+            # Update username in folders table
+            cur.execute('UPDATE folders SET username = %s WHERE username = %s', 
+                       (new_username, current_username))
+            
+            # Update username in notes table
+            cur.execute('UPDATE notes SET username = %s WHERE username = %s', 
+                       (new_username, current_username))
+
+        # Update password if provided
+        if new_password and new_password != current_password:
+            hashed_password = hashpw(new_password.encode('utf-8'), gensalt())
+            cur.execute('UPDATE users SET password = %s WHERE username = %s', 
+                       (hashed_password, new_username or current_username))
+
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'message': 'User settings updated successfully'}), 200
+
+    except Exception as e:
+        cur.close()
+        return jsonify({'message': 'Error updating user settings', 'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
