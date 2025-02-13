@@ -566,6 +566,7 @@ body {
    display: grid;
    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
    gap: 20px;
+   margin: 10px 40px;
 }
 
 .note-card {
