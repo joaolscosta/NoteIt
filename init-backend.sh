@@ -9,28 +9,35 @@ else
     exit 1
 fi
 
+# Update package list
+echo "Updating system packages..."
+sudo apt update
+
+# Install necessary system dependencies
+echo "Installing required system packages..."
+sudo apt install -y python3.12 python3.12-venv python3.12-dev \
+                    libmysqlclient-dev build-essential mysql-server
+
 # Check if Python3 is installed
 if ! command -v python3 &>/dev/null; then
-    echo "Python3 is not installed. Installing..."
-    sudo apt-get update && sudo apt-get install -y python3 python3-venv
-else
-    echo "Python3 is already installed."
+    echo "Python3 installation failed. Please install Python manually."
+    exit 1
 fi
 
 # Check if pip3 is installed
 if ! command -v pip3 &>/dev/null; then
     echo "pip3 is not installed. Installing..."
-    sudo apt-get install -y python3-pip
+    sudo apt install -y python3-pip
 else
     echo "pip3 is already installed."
 fi
 
 # Check if MySQL is installed
 if ! command -v mysql &>/dev/null; then
-    echo "MySQL is not installed. Installing..."
-    sudo apt-get install -y mysql-server libmysqlclient-dev
+    echo "MySQL installation failed. Please install it manually."
+    exit 1
 else
-    echo "MySQL is already installed."
+    echo "MySQL is installed."
 fi
 
 # Check if the MySQL service is running
@@ -59,12 +66,18 @@ fi
 
 source venv/bin/activate
 
+# Ensure Flask dependencies are installed
 if [ -f requirements.txt ]; then
     echo "Installing Python dependencies from requirements.txt..."
+    pip install --upgrade pip
     pip install -r requirements.txt
 else
     echo "requirements.txt not found. Skipping Python dependency installation."
 fi
+
+# Ensure flask-mysqldb is installed
+echo "Installing flask-mysqldb..."
+pip install flask-mysqldb
 
 # Ensure the MySQL user and database exist
 echo "Configuring MySQL user '${DB_USER}' and database '${DB_NAME}'..."
