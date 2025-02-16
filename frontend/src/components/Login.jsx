@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:5000";
 
-function Login({ onSwitch }) {
-   const [username, setUsername] = useState("");
+function Login({ onSwitch, setUsername }) {
+   const [username, setUsernameState] = useState("");
    const [password, setPassword] = useState("");
    const [isDialogOpen, setIsDialogOpen] = useState(false);
    const [dialogMessage, setDialogMessage] = useState("");
@@ -31,7 +31,7 @@ function Login({ onSwitch }) {
       try {
          const data = await loginUser(username, password);
          if (data.message === "Login successful") {
-            localStorage.setItem("username", username);
+            setUsername(username);
             navigate("/main_page");
          } else {
             setDialogMessage(data.message || "An error occurred during login.");
@@ -59,7 +59,7 @@ function Login({ onSwitch }) {
                   type="text"
                   placeholder="Enter your username"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => setUsernameState(e.target.value)}
                />
                <input
                   type="password"

@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar";
 import Library from "./Library";
 import Note from "./Note";
 
-const MainPage = () => {
+const MainPage = ({ username, setUsername }) => {
    const [view, setView] = useState("library");
    const [currentFolder, setCurrentFolder] = useState({ id: null, name: "/" });
    const [selectedNote, setSelectedNote] = useState(null);
@@ -15,12 +15,17 @@ const MainPage = () => {
       setView("library");
    };
 
+   const handleLogout = () => {
+      setUsername("");
+   };
+
    return (
       <div className="main-page">
-         <Topbar />
-         <Sidebar setView={setView} currentFolder={currentFolder} />
+         <Topbar username={username} onLogout={handleLogout} />
+         <Sidebar username={username} setView={setView} currentFolder={currentFolder} />
          {view === "library" ? (
             <Library
+               username={username}
                setView={setView}
                currentFolder={currentFolder}
                setCurrentFolder={setCurrentFolder}
@@ -28,6 +33,7 @@ const MainPage = () => {
             />
          ) : (
             <Note
+               username={username}
                currentFolder={currentFolder}
                setView={setView}
                selectedNote={selectedNote}

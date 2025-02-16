@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { marked } from "marked";
 import axios from "axios";
 
-const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRoot }) => {
+const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRoot, username }) => {
    const [title, setTitle] = useState(selectedNote?.title || "");
    const [content, setContent] = useState(selectedNote?.text || "");
    const [isSaving, setIsSaving] = useState(false);
@@ -48,7 +48,6 @@ const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRo
 
       setIsSaving(true);
       try {
-         const username = localStorage.getItem("username");
          const trimmedTitle = title.trim();
          const trimmedContent = content.trim();
 

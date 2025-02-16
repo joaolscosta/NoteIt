@@ -2,8 +2,8 @@ import React, { useState } from "react";
 
 const API_URL = "http://localhost:5000";
 
-function Register({ onSwitch }) {
-   const [username, setUsername] = useState("");
+function Register({ onSwitch, setUsername }) {
+   const [username, setUsernameState] = useState("");
    const [password, setPassword] = useState("");
    const [isDialogOpen, setIsDialogOpen] = useState(false);
    const [dialogMessage, setDialogMessage] = useState("");
@@ -32,6 +32,7 @@ function Register({ onSwitch }) {
 
          if (data.message === "User registered successfully") {
             setDialogMessage("Registration Successful! Your account has been created.");
+            setUsername(username);
          } else if (data.message === "Username already exists") {
             setDialogMessage("Username already exists. Please choose a different username.");
          } else {
@@ -61,7 +62,7 @@ function Register({ onSwitch }) {
                   type="text"
                   placeholder="Enter your username"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => setUsernameState(e.target.value)}
                />
                <input
                   type="password"

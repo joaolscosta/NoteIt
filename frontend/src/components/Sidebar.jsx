@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-function Sidebar({ setView, currentFolder }) {
+function Sidebar({ setView, currentFolder, username }) {
    const [isDialogOpen, setIsDialogOpen] = useState(false);
    const [taskInput, setTaskInput] = useState("");
    const [tasks, setTasks] = useState([]);
@@ -16,7 +16,6 @@ function Sidebar({ setView, currentFolder }) {
    };
 
    const fetchTasks = async () => {
-      const username = localStorage.getItem("username");
       if (!username) return;
 
       try {
@@ -34,7 +33,6 @@ function Sidebar({ setView, currentFolder }) {
 
       if (taskInput.trim() !== "") {
          try {
-            const username = localStorage.getItem("username");
             const response = await axios.post("http://localhost:5000/addtask", {
                username: username,
                task_text: taskInput,
@@ -91,7 +89,7 @@ function Sidebar({ setView, currentFolder }) {
    const deleteAllTasks = async () => {
       try {
          const response = await axios.post("http://localhost:5000/delete_all_tasks", {
-            username: localStorage.getItem("username"),
+            username: username,
          });
 
          if (response.status === 200) {
@@ -105,7 +103,7 @@ function Sidebar({ setView, currentFolder }) {
 
    useEffect(() => {
       fetchTasks();
-   }, []);
+   }, [username]);
 
    return (
       <div className="sidebar">

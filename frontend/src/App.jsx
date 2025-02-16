@@ -6,6 +6,7 @@ import MainPage from "./components/MainPage";
 
 function App() {
    const [isRegistering, setIsRegistering] = useState(false);
+   const [username, setUsername] = useState("");
 
    return (
       <Router>
@@ -14,13 +15,13 @@ function App() {
                path="/"
                element={
                   isRegistering ? (
-                     <Register onSwitch={() => setIsRegistering(false)} />
+                     <Register onSwitch={() => setIsRegistering(false)} setUsername={setUsername} />
                   ) : (
-                     <Login onSwitch={() => setIsRegistering(true)} />
+                     <Login onSwitch={() => setIsRegistering(true)} setUsername={setUsername} />
                   )
                }
             />
-            <Route path="/main_page" element={<MainPage />} />
+            <Route path="/main_page" element={<MainPage username={username} setUsername={setUsername} />} />
          </Routes>
       </Router>
    );

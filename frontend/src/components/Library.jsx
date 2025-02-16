@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote }) {
+function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote, username }) {
    const [folders, setFolders] = useState([]);
    const [notes, setNotes] = useState([]);
    const [path, setPath] = useState([{ id: null, name: " " }]);
@@ -13,11 +13,10 @@ function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote }) 
    useEffect(() => {
       fetchFolders();
       fetchNotes();
-   }, [currentFolder]);
+   }, [currentFolder, username]);
 
    const fetchFolders = async () => {
       try {
-         const username = localStorage.getItem("username");
          const parentId = currentFolder.id;
          const response = await axios.get("http://localhost:5000/get_folders", {
             params: { username, parent_id: parentId },
@@ -30,7 +29,6 @@ function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote }) 
 
    const fetchNotes = async () => {
       try {
-         const username = localStorage.getItem("username");
          const response = await axios.get("http://localhost:5000/get_notes", {
             params: { username, folder_id: currentFolder.id },
          });
@@ -57,7 +55,6 @@ function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote }) 
       }
 
       try {
-         const username = localStorage.getItem("username");
          const parentId = currentFolder.id;
          await axios.post("http://localhost:5000/create_folder", {
             username,

@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Settings({ isOpen, onClose }) {
+function Settings({ isOpen, onClose, username, setUsername }) {
    const [newUsername, setNewUsername] = useState("");
    const [newPassword, setNewPassword] = useState("");
    const [currentPassword, setCurrentPassword] = useState("");
    const [error, setError] = useState("");
    const navigate = useNavigate();
-   const username = localStorage.getItem("username");
 
    const handleSubmit = async (e) => {
       e.preventDefault();
@@ -24,7 +23,7 @@ function Settings({ isOpen, onClose }) {
 
          if (response.status === 200) {
             if (newUsername) {
-               localStorage.setItem("username", newUsername);
+               setUsername(newUsername);
             }
             onClose();
             window.location.reload();
