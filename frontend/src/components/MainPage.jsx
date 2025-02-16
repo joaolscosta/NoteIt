@@ -21,7 +21,7 @@ const MainPage = ({ username, setUsername }) => {
 
    return (
       <div className="main-page">
-         <Topbar username={username} onLogout={handleLogout} />
+         <Topbar username={username} setUsername={setUsername} onLogout={handleLogout} />
          <Sidebar username={username} setView={setView} currentFolder={currentFolder} />
          {view === "library" ? (
             <Library

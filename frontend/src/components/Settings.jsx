@@ -26,7 +26,6 @@ function Settings({ isOpen, onClose, username, setUsername }) {
                setUsername(newUsername);
             }
             onClose();
-            window.location.reload();
          }
       } catch (err) {
          setError(err.response?.data?.message || "Failed to update settings. Please try again.");

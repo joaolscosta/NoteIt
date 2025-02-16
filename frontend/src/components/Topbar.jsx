@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Settings from "./Settings";
 
-function Topbar({ username, onLogout }) {
+function Topbar({ username, setUsername, onLogout }) {
    const navigate = useNavigate();
    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -26,7 +26,7 @@ function Topbar({ username, onLogout }) {
             isOpen={isSettingsOpen}
             onClose={() => setIsSettingsOpen(false)}
             username={username}
-            setUsername={onLogout}
+            setUsername={setUsername}
          />
       </div>
    );
