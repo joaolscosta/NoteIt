@@ -27,8 +27,8 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 Session(app)
 
 # Auxiliar function to check login status
-def require_login():
-    if 'username' not in session:
+def require_login(username):
+    if session.get('username') != username:
         return jsonify({'message': 'Unauthorized access'}), 401
 
 # --------------------------------------- User Routes ---------------------------------------
@@ -94,28 +94,22 @@ def login():
     except Exception as e:
         cur.close()
         return jsonify({'message': 'Error logging in', 'error': str(e)}), 500
-
-# Logout
-@app.route('/logout', methods=['POST'])
-def logout():
-    session.pop('username', None)
-    return jsonify({'message': 'Logged out successfully'}), 200
-
-# --------------------------------------- Task Routes ---------------------------------------
+    
+# --------------------------------------- Task routes ---------------------------------------
 
 # Add a task
 @app.route('/addtask', methods=['POST'])
 def add_task():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
-    username = session['username']
     task_data = request.json
+    username = task_data.get('username')
     task_text = task_data.get('task_text')
     
-    if not task_text:
-        return jsonify({'message': 'Task is required'}), 400
+    auth_response = require_login(username)
+    if auth_response:
+        return auth_response
+    
+    if not username or not task_text:
+        return jsonify({'message': 'Task and user_id are required'}), 400
 
     try:
         cur = mysql.connection.cursor()
@@ -133,28 +127,31 @@ def add_task():
 # Get all tasks
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
-    username = session['username']
+    username = request.args.get('username')
+    
+    auth_response = require_login(username)
+    if auth_response:
+        return auth_response
+    
+    if not username:
+        return jsonify({'message': 'Username is required'}), 400
 
     try:
         cur = mysql.connection.cursor()
+
         cur.execute('SELECT id, task, completed FROM tasks WHERE username = %s', (username,))
         tasks = [{'id': row[0], 'task': row[1], 'completed': row[2]} for row in cur.fetchall()]
+        
         cur.close()
         return jsonify({'tasks': tasks}), 200
     except Exception as e:
+        cur.close()
         return jsonify({'message': 'Error fetching tasks', 'error': str(e)}), 500
 
 # Mark task as complete
 @app.route('/complete_task', methods=['POST'])
 def toggle_task_completion():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
+    #TODO
     task_data = request.json
     task_id = task_data.get('task_id')
 
@@ -184,10 +181,7 @@ def toggle_task_completion():
 # Delete a task
 @app.route('/delete_task', methods=['POST'])
 def delete_task():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
+    #TODO
     task_data = request.json
     task_id = task_data.get('task_id')
 
@@ -213,22 +207,49 @@ def delete_task():
         cur.close()
         return jsonify({'message': 'Error deleting task', 'error': str(e)}), 500
 
+# Delete all tasks for that username
+@app.route('/delete_all_tasks', methods=['POST'])
+def delete_all_tasks():
+    
+    username = request.json.get('username')
+    
+    auth_response = require_login(username)
+    if auth_response:
+        return auth_response
+
+    if not username:
+        return jsonify({'message': 'Username is required'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        
+        cur.execute('DELETE FROM tasks WHERE username = %s', (username,))
+        mysql.connection.commit()
+        
+        cur.close()
+        
+        return jsonify({'message': 'All tasks deleted successfully'}), 200
+    except Exception as e:
+        cur.close()
+        return jsonify({'message': 'Error deleting tasks', 'error': str(e)}), 500
+
 # --------------------------------------- Folders ---------------------------------------
 
 # Add a folder
 @app.route('/create_folder', methods=['POST'])
 def create_folder():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
+    
     data = request.json
-    username = session['username']
+    username = data.get('username')
     folder_name = data.get('folder_name')
-    parent_id = data.get('parent_id', None)
+    parent_id = data.get('parent_id', None) # None if root
+    
+    auth_response = require_login(username)
+    if auth_response:
+        return auth_response
 
-    if not folder_name:
-        return jsonify({'message': 'Folder name is required'}), 400
+    if not username or not folder_name:
+        return jsonify({'message': 'Username and folder name are required'}), 400
 
     try:
         cur = mysql.connection.cursor()
@@ -245,12 +266,16 @@ def create_folder():
 # Get folders
 @app.route('/get_folders', methods=['GET'])
 def get_folders():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
+    
+    username = request.args.get('username')
+    parent_id = request.args.get('parent_id', None)  # If none, return root folders
+    
+    auth_response = require_login(username)
+    if auth_response:
+        return auth_response
 
-    username = session['username']
-    parent_id = request.args.get('parent_id', None)
+    if not username:
+        return jsonify({'message': 'Username is required'}), 400
 
     try:
         cur = mysql.connection.cursor()
@@ -264,23 +289,57 @@ def get_folders():
     except Exception as e:
         return jsonify({'message': 'Error fetching folders', 'error': str(e)}), 500
 
+# Auxiliar function to recursively delete subfolders
+def delete_subfolders(folder_id):
+    #TODO
+    
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT id FROM folders WHERE parent_id = %s', (folder_id,))
+    subfolders = cur.fetchall()
+
+    for subfolder in subfolders:
+        delete_subfolders(subfolder[0])
+        cur.execute('DELETE FROM folders WHERE id = %s', (subfolder[0],))
+
+# Delete a folder
+@app.route('/delete_folder', methods=['POST'])
+def delete_folder():
+    #TODO
+    
+    data = request.json
+    folder_id = data.get('folder_id')
+
+    if not folder_id:
+        return jsonify({'message': 'Folder ID is required'}), 400
+
+    try:
+        delete_subfolders(folder_id)
+        
+        cur = mysql.connection.cursor()
+        cur.execute('DELETE FROM folders WHERE id = %s', (folder_id,))
+        mysql.connection.commit()
+
+        cur.close()
+
+        return jsonify({'message': 'Folder and subfolders deleted successfully'}), 200
+    except Exception as e:
+        cur.close()
+        return jsonify({'message': 'Error deleting folder', 'error': str(e)}), 500
+    
 # --------------------------------------- Notes ---------------------------------------
 
 # Add a note
 @app.route('/add_note', methods=['POST'])
 def add_note():
-    
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
-    username = session['username']
-    
     data = request.json
     username = data.get('username')
     folder_id = data.get('folder_id')
     note_title = data.get('note_title')
     note_text = data.get('note_text')
+    
+    auth_response = require_login(username)
+    if auth_response:
+        return auth_response
 
     if not username or not folder_id or not note_text or not note_title:
         return jsonify({'message': 'Username, folder_id, note_title, and note_text are required'}), 400
@@ -300,13 +359,12 @@ def add_note():
 # Get notes
 @app.route('/get_notes', methods=['GET'])
 def get_notes():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
-    username = session['username']
-    
+    username = request.args.get('username')
     folder_id = request.args.get('folder_id')
+
+    auth_response = require_login(username)
+    if auth_response:
+        return auth_response
 
     if not username:
         return jsonify({'message': 'Username is required'}), 400
@@ -326,16 +384,15 @@ def get_notes():
 # Update a note
 @app.route('/update_note', methods=['POST'])
 def update_note():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
-    username = session['username']
-    
     data = request.json
     note_id = data.get('note_id')
     note_title = data.get('note_title')
     note_text = data.get('note_text')
+    username = data.get('username')
+    
+    auth_response = require_login(username)
+    if auth_response:
+        return auth_response
 
     if not note_id or not note_title or not note_text or not username:
         return jsonify({'message': 'Note ID, title, text, and username are required'}), 400
@@ -355,10 +412,7 @@ def update_note():
 # Delete a note
 @app.route('/delete_note', methods=['POST'])
 def delete_note():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
+    #TODO
     data = request.json
     note_id = data.get('note_id')
 
@@ -379,17 +433,15 @@ def delete_note():
 # Update user settings
 @app.route('/update-user', methods=['PUT'])
 def update_user():
-    auth_check = require_login()
-    if auth_check:
-        return auth_check
-
-    username = session['username']
-    
     data = request.json
     current_username = data.get('currentUsername')
     new_username = data.get('newUsername')
     current_password = data.get('currentPassword')
     new_password = data.get('newPassword')
+    
+    auth_response = require_login(current_username)
+    if auth_response:
+        return auth_response
 
     if not current_username or not current_password:
         return jsonify({'message': 'Current username and password are required'}), 400
