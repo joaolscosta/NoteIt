@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, session
-from flask_mysql_connector import MySQL
+from flask_mysqldb import MySQL
 from flask_session import Session
 from flask_cors import CORS
 from bcrypt import hashpw, gensalt, checkpw
@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.config['MYSQL_HOST'] = os.getenv('DB_HOST')
 app.config['MYSQL_USER'] = os.getenv('DB_USER')
 app.config['MYSQL_PASSWORD'] = os.getenv('DB_PASSWORD')
-app.config['MYSQL_DATABASE'] = os.getenv('DB_NAME')
+app.config['MYSQL_DB'] = os.getenv('DB_NAME')
 
 # Session Configuration
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')

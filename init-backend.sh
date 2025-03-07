@@ -1,32 +1,34 @@
 #!/bin/bash
 
-# Load environment variables from the .env file
+# Load environment variables securely
 if [ -f .env ]; then
     echo "Loading environment variables from .env..."
-    export $(cat .env | xargs)
+    set -a
+    source .env
+    set +a
 else
     echo ".env file not found. Please create one before running this script."
     exit 1
 fi
 
-# Update package list
+# Update system packages
 echo "Updating system packages..."
 sudo apt update
 
-# Install necessary system dependencies
+# Install necessary system packages
 echo "Installing required system packages..."
 sudo apt install -y python3.12 python3.12-venv python3.12-dev \
                     libmysqlclient-dev build-essential mysql-server
 
-# Check if Python3 is installed
+# Check if Python is installed
 if ! command -v python3 &>/dev/null; then
-    echo "Python3 installation failed. Please install Python manually."
+    echo "Python installation failed. Please install it manually."
     exit 1
 fi
 
 # Check if pip3 is installed
 if ! command -v pip3 &>/dev/null; then
-    echo "pip3 is not installed. Installing..."
+    echo "pip3 not found. Installing..."
     sudo apt install -y python3-pip
 else
     echo "pip3 is already installed."
@@ -40,9 +42,9 @@ else
     echo "MySQL is installed."
 fi
 
-# Check if the MySQL service is running
+# Start MySQL service if not running
 if ! systemctl is-active --quiet mysql; then
-    echo "MySQL is not running. Starting MySQL..."
+    echo "MySQL is not running. Starting service..."
     sudo systemctl start mysql
     if ! systemctl is-active --quiet mysql; then
         echo "Failed to start MySQL. Please check your installation."
@@ -55,8 +57,8 @@ fi
 # Enable MySQL to start on boot
 sudo systemctl enable mysql
 
-# Setup Python environment and install dependencies
-echo "Setting up Python environment..."
+# Set up Python virtual environment
+echo "Setting up Python virtual environment..."
 if [ ! -d "venv" ]; then
     python3 -m venv venv
     echo "Virtual environment created."
@@ -66,7 +68,7 @@ fi
 
 source venv/bin/activate
 
-# Ensure Flask dependencies are installed
+# Install Python dependencies
 if [ -f requirements.txt ]; then
     echo "Installing Python dependencies from requirements.txt..."
     pip install --upgrade pip
@@ -75,32 +77,29 @@ else
     echo "requirements.txt not found. Skipping Python dependency installation."
 fi
 
-# Ensure flask-mysqldb is installed
-echo "Installing flask-mysqldb..."
+# Install Flask-MySQLDB package
 pip install flask-mysqldb
 
-# Ensure the MySQL user and database exist
+# Configure MySQL user and database
 echo "Configuring MySQL user '${DB_USER}' and database '${DB_NAME}'..."
-mysql -u root -p"${DB_ROOT_PASSWORD}" <<EOF
+mysql -u root -p <<EOF
+CREATE DATABASE IF NOT EXISTS ${DB_NAME};
 CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';
 GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';
 FLUSH PRIVILEGES;
-CREATE DATABASE IF NOT EXISTS ${DB_NAME};
 EOF
 
-# Initialize the database schema
+# Initialize database schema
 echo "Initializing the database schema..."
 mysql -u "${DB_USER}" -p"${DB_PASSWORD}" ${DB_NAME} <<EOF
--- users table
-DROP TABLE IF EXISTS users;
+-- Users table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL
 );
 
--- tasks table
-DROP TABLE IF EXISTS tasks;
+-- Tasks table
 CREATE TABLE IF NOT EXISTS tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     task TEXT NOT NULL,
@@ -109,10 +108,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     completed BOOLEAN DEFAULT FALSE
 );
 
-DROP TABLE IF EXISTS notes;
-DROP TABLE IF EXISTS folders;
-
--- folders table
+-- Folders table
 CREATE TABLE IF NOT EXISTS folders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -122,7 +118,7 @@ CREATE TABLE IF NOT EXISTS folders (
     FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE
 );
 
--- notes table
+-- Notes table
 CREATE TABLE IF NOT EXISTS notes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -134,8 +130,8 @@ CREATE TABLE IF NOT EXISTS notes (
 );
 EOF
 
-# Start the Flask server
-echo "Starting the Flask server..."
+# Start Flask server
+echo "Starting Flask server..."
 export FLASK_APP=${FLASK_APP:-app.py}
 export FLASK_ENV=${FLASK_ENV:-development}
 
