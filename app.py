@@ -95,6 +95,15 @@ def login():
     except Exception as e:
         cur.close()
         return jsonify({'message': 'Error logging in', 'error': str(e)}), 500
+
+# Logout
+@app.route('/logout', methods=['POST'])
+def logout():
+    try:
+        session.pop('username', None)
+        return jsonify({"message": "Logout successful"}), 200
+    except Exception as e:
+        return jsonify({'message': 'No success', 'error': str(e)}), 500
     
 # --------------------------------------- Task routes ---------------------------------------
 

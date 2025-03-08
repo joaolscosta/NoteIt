@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const api = axios.create({
+   withCredentials: true,
+});
+
 function Settings({ isOpen, onClose, username, setUsername }) {
    const [newUsername, setNewUsername] = useState("");
    const [newPassword, setNewPassword] = useState("");
@@ -14,7 +18,7 @@ function Settings({ isOpen, onClose, username, setUsername }) {
       setError("");
 
       try {
-         const response = await axios.put("http://localhost:5000/update-user", {
+         const response = await api.put("http://localhost:5000/update-user", {
             currentUsername: username,
             newUsername: newUsername || username,
             currentPassword,

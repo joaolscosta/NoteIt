@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { marked } from "marked";
 import axios from "axios";
 
+const api = axios.create({
+   withCredentials: true,
+});
+
 const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRoot, username }) => {
    const [title, setTitle] = useState(selectedNote?.title || "");
    const [content, setContent] = useState(selectedNote?.text || "");
@@ -19,7 +23,7 @@ const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRo
 
       setIsDeleting(true);
       try {
-         const response = await axios.post("http://localhost:5000/delete_note", {
+         const response = await api.post("http://localhost:5000/delete_note", {
             note_id: selectedNote.id,
          });
 
@@ -52,7 +56,7 @@ const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRo
          const trimmedContent = content.trim();
 
          if (selectedNote?.id) {
-            const response = await axios.post("http://localhost:5000/update_note", {
+            const response = await api.post("http://localhost:5000/update_note", {
                username,
                note_id: selectedNote.id,
                note_title: trimmedTitle,
@@ -63,7 +67,7 @@ const Note = ({ setView, currentFolder, selectedNote, setSelectedNote, resetToRo
                resetToRoot();
             }
          } else {
-            const response = await axios.post("http://localhost:5000/add_note", {
+            const response = await api.post("http://localhost:5000/add_note", {
                username,
                folder_id: currentFolder.id,
                note_title: trimmedTitle,

@@ -1,13 +1,28 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Settings from "./Settings";
+import axios from "axios";
+
+const api = axios.create({
+   withCredentials: true,
+});
 
 function Topbar({ username, setUsername, onLogout }) {
    const navigate = useNavigate();
    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+   const logout = async () => {
+      try {
+         const response = await api.post("http://localhost:5000/logout");
+         return response.data;
+      } catch (error) {
+         console.error("Error fetching tasks:", error);
+      }
+   };
+
    const handleLogout = () => {
       onLogout();
+      logout();
       navigate("/");
    };
 

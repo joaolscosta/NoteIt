@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+const api = axios.create({
+   withCredentials: true,
+});
+
 function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote, username }) {
    const [folders, setFolders] = useState([]);
    const [notes, setNotes] = useState([]);
@@ -18,7 +22,7 @@ function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote, us
    const fetchFolders = async () => {
       try {
          const parentId = currentFolder.id;
-         const response = await axios.get("http://localhost:5000/get_folders", {
+         const response = await api.get("http://localhost:5000/get_folders", {
             params: { username, parent_id: parentId },
          });
          setFolders(response.data.folders);
@@ -29,7 +33,7 @@ function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote, us
 
    const fetchNotes = async () => {
       try {
-         const response = await axios.get("http://localhost:5000/get_notes", {
+         const response = await api.get("http://localhost:5000/get_notes", {
             params: { username, folder_id: currentFolder.id },
          });
          setNotes(response.data.notes);
@@ -56,7 +60,7 @@ function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote, us
 
       try {
          const parentId = currentFolder.id;
-         await axios.post("http://localhost:5000/create_folder", {
+         await api.post("http://localhost:5000/create_folder", {
             username,
             folder_name: newFolderName,
             parent_id: parentId,
@@ -103,7 +107,7 @@ function Library({ setView, currentFolder, setCurrentFolder, setSelectedNote, us
       if (!folderToDelete) return;
 
       try {
-         await axios.post("http://localhost:5000/delete_folder", { folder_id: folderToDelete.id });
+         await api.post("http://localhost:5000/delete_folder", { folder_id: folderToDelete.id });
          fetchFolders();
          handleDeleteDialogClose();
       } catch (error) {
