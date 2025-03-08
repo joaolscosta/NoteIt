@@ -23,13 +23,14 @@ app.config['SESSION_COOKIE_HTTPONLY'] = os.getenv('SESSION_COOKIE_HTTPONLY') == 
 app.config['SESSION_COOKIE_SECURE'] = os.getenv('SESSION_COOKIE_SECURE') == 'True'
 
 mysql = MySQL(app)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173", "supports_credentials": True}})
 Session(app)
 
 # Auxiliar function to check login status
 def require_login(username):
     if session.get('username') != username:
         return jsonify({'message': 'Unauthorized access'}), 401
+    return None
 
 # --------------------------------------- User Routes ---------------------------------------
 

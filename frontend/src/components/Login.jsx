@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const API_URL = "http://localhost:5000";
 
@@ -10,20 +11,13 @@ function Login({ onSwitch, setUsername }) {
    const [dialogMessage, setDialogMessage] = useState("");
    const navigate = useNavigate();
 
-   // Login the user in the API
    const loginUser = async (username, password) => {
-      const response = await fetch(`${API_URL}/login`, {
-         method: "POST",
-         headers: {
-            "Content-Type": "application/json",
-         },
-         body: JSON.stringify({ username, password }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-         throw new Error(data.message || "Something went wrong");
+      try {
+         const response = await axios.post(`${API_URL}/login`, { username, password }, { withCredentials: true });
+         return response.data;
+      } catch (error) {
+         throw new Error(error.response?.data?.message || "Something went wrong");
       }
-      return data;
    };
 
    const handleLogin = async (e) => {

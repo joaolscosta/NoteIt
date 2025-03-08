@@ -5,6 +5,7 @@ venv/
 .env
 
 # Python
+flask_session/
 __pycache__/
 *.pyc
 *.pyo

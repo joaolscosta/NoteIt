@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+const api = axios.create({
+   withCredentials: true,
+});
+
 function Sidebar({ setView, currentFolder, username }) {
    const [isDialogOpen, setIsDialogOpen] = useState(false);
    const [taskInput, setTaskInput] = useState("");
@@ -19,7 +23,7 @@ function Sidebar({ setView, currentFolder, username }) {
       if (!username) return;
 
       try {
-         const response = await axios.get(`http://localhost:5000/tasks?username=${username}`);
+         const response = await api.get(`http://localhost:5000/tasks?username=${username}`);
          if (response.status === 200) {
             setTasks(response.data.tasks);
          }
@@ -33,7 +37,7 @@ function Sidebar({ setView, currentFolder, username }) {
 
       if (taskInput.trim() !== "") {
          try {
-            const response = await axios.post("http://localhost:5000/addtask", {
+            const response = await api.post("http://localhost:5000/addtask", {
                username: username,
                task_text: taskInput,
             });
@@ -53,7 +57,7 @@ function Sidebar({ setView, currentFolder, username }) {
 
    const toggleTaskCompletion = async (taskId, currentStatus) => {
       try {
-         const response = await axios.post("http://localhost:5000/complete_task", { task_id: taskId });
+         const response = await api.post("http://localhost:5000/complete_task", { task_id: taskId });
          if (response.status === 200) {
             setTasks((prevTasks) =>
                prevTasks.map((task) => (task.id === taskId ? { ...task, completed: !currentStatus } : task))
@@ -66,7 +70,7 @@ function Sidebar({ setView, currentFolder, username }) {
 
    const deleteTask = async (taskId) => {
       try {
-         const response = await axios.post("http://localhost:5000/delete_task", {
+         const response = await api.post("http://localhost:5000/delete_task", {
             task_id: taskId,
          });
 
@@ -88,7 +92,7 @@ function Sidebar({ setView, currentFolder, username }) {
 
    const deleteAllTasks = async () => {
       try {
-         const response = await axios.post("http://localhost:5000/delete_all_tasks", {
+         const response = await api.post("http://localhost:5000/delete_all_tasks", {
             username: username,
          });
 
