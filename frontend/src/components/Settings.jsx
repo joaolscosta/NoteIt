@@ -6,12 +6,22 @@ const api = axios.create({
    withCredentials: true,
 });
 
-function Settings({ isOpen, onClose, username, setUsername }) {
+function Settings({ isOpen, onClose, username, setUsername, onLogout }) {
    const [newUsername, setNewUsername] = useState("");
    const [newPassword, setNewPassword] = useState("");
    const [currentPassword, setCurrentPassword] = useState("");
    const [error, setError] = useState("");
    const navigate = useNavigate();
+
+   const logout = async () => {
+      try {
+         await api.post("http://localhost:5000/logout");
+         navigate("/");
+         onLogout();
+      } catch (err) {
+         console.error("Error logging out:", err);
+      }
+   };
 
    const handleSubmit = async (e) => {
       e.preventDefault();
@@ -30,6 +40,7 @@ function Settings({ isOpen, onClose, username, setUsername }) {
                setUsername(newUsername);
             }
             onClose();
+            logout();
          }
       } catch (err) {
          setError(err.response?.data?.message || "Failed to update settings. Please try again.");
